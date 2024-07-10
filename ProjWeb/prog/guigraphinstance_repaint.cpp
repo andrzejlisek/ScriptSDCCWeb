@@ -188,14 +188,14 @@ std::string GuiGraphInstance::RepaintScreen(int GraphNum, int GraphIdx, int ScrW
                                         {
                                             if (TextF)
                                             {
-                                                DrawPointT(DrawXX + XX, DrawYY - YY, DrawZ, GuiGraph_->GraphDef[I].ColorR, GuiGraph_->GraphDef[I].ColorG, GuiGraph_->GraphDef[I].ColorB);
+                                                DrawPointT(DrawXX + XX, DrawYY - YY, DrawZ, GuiGraph_->GraphDef[I].ColorR, GuiGraph_->GraphDef[I].ColorG, GuiGraph_->GraphDef[I].ColorB, M_PI_2);
                                             }
                                         }
                                         else
                                         {
                                             if (TextB)
                                             {
-                                                DrawPointT(DrawXX + XX, DrawYY - YY, DrawZ, GuiGraph_->GraphDef[I].ColorR0, GuiGraph_->GraphDef[I].ColorG0, GuiGraph_->GraphDef[I].ColorB0);
+                                                DrawPointT(DrawXX + XX, DrawYY - YY, DrawZ, GuiGraph_->GraphDef[I].ColorR0, GuiGraph_->GraphDef[I].ColorG0, GuiGraph_->GraphDef[I].ColorB0, M_PI_2);
                                             }
                                         }
                                         P++;

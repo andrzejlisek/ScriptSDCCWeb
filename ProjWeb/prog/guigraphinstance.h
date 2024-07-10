@@ -225,7 +225,7 @@ public:
     void DrawUpdateRepaint(int X, int Y, int MarginX, int MarginY);
 
     void DrawPoint(int X, int Y, int Z, uchar R, uchar G, uchar B, double LightAngle);
-    void DrawPointT(int X, int Y, int Z, uchar R, uchar G, uchar B);
+    void DrawPointT(int X, int Y, int Z, uchar R, uchar G, uchar B, double LightAngle);
     void DrawPointH(int X, int Y, int Z, uchar R, uchar G, uchar B, double LightAngle);
     void DrawPointV(int X, int Y, int Z, uchar R, uchar G, uchar B, double LightAngle);
     void DrawPointD1(int X, int Y, int Z, uchar R, uchar G, uchar B, double LightAngle);

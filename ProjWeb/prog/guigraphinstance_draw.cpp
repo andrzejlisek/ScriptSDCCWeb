@@ -238,7 +238,7 @@ void GuiGraphInstance::DrawPoint(int X, int Y, int Z, uchar R, uchar G, uchar B,
     }
 }
 
-void GuiGraphInstance::DrawPointT(int X, int Y, int Z, uchar R, uchar G, uchar B)
+void GuiGraphInstance::DrawPointT(int X, int Y, int Z, uchar R, uchar G, uchar B, double LightAngle)
 {
     int DrawX = X + ZeroX;
     int DrawY = ZeroY - Y;
@@ -258,6 +258,7 @@ void GuiGraphInstance::DrawPointT(int X, int Y, int Z, uchar R, uchar G, uchar B
                 R0 = R;
                 G0 = G;
                 B0 = B;
+                CalcColor(R0, G0, B0, DrawX, DrawY, DrawZ, LightAngle);
                 ImgZ[PosX] = DrawZ; Pos4X = PosX << 2; ImgRaw[Pos4X + 0] = R0; ImgRaw[Pos4X + 1] = G0; ImgRaw[Pos4X + 2] = B0;
             }
         }
@@ -269,6 +270,7 @@ void GuiGraphInstance::DrawPointT(int X, int Y, int Z, uchar R, uchar G, uchar B
                 R0 = R;
                 G0 = G;
                 B0 = B;
+                CalcColor(R0, G0, B0, DrawX, DrawY, DrawZ, LightAngle);
                 ImgZ[PosX] = DrawZ; Pos4X = PosX << 2; ImgRaw[Pos4X + 0] = R0; ImgRaw[Pos4X + 1] = G0; ImgRaw[Pos4X + 2] = B0;
             }
         }
