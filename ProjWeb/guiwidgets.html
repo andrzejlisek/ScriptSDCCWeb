@@ -39,6 +39,23 @@
     
     <script type='text/javascript'>
 
+        let WindowW = 1;
+        let WindowH = 1;
+        let WindowDivObj = document.getElementById("div0");
+        
+        function WindowResize()
+        {
+            const WindowW_ = window.innerWidth;
+            const WindowH_ = window.innerHeight;
+            if ((WindowW != WindowW_) || (WindowH != WindowH_))
+            {
+                WindowW = WindowW_;
+                WindowH = WindowH_;
+                WindowDivObj.style["width"] = WindowW + "px";
+                WindowDivObj.style["height"] = WindowH + "px";
+            }
+        }
+
         let IdThis = Date.now();
         let IdParent = 0;
 
@@ -59,6 +76,7 @@
             GuiN = N;
             GuiIdx = Idx;
             document.title = "ScriptSDCC - Widgets " + N;
+            WindowResize();
             return IdThis;
         }
 
@@ -512,6 +530,8 @@
             ListObjPar.removeChild(ListObj);
             WidgetList.splice(ListPos, 1);
         }
+
+        window.addEventListener("resize", WindowResize, false);
 
     </script>
   </body>

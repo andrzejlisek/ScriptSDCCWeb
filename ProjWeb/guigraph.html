@@ -59,6 +59,7 @@
             display:inline-block;
             text-align:center;
             vertical-align: middle;
+            overflow: scroll;
         }
         .ctrlscreen
         {
@@ -497,7 +498,7 @@
             
             if (ParamsAutoRepaint)
             {
-                //Repaint();
+                Repaint();
             }
         }
 
@@ -621,6 +622,7 @@
                 ScreenObj.style["width"] = CanvasW_disp + "px";
                 ScreenObj.style["height"] = CanvasH_disp + "px";
             }
+            Repaint();
         }
 
         function RepaintResult(Idx, Raw, RawL)
@@ -651,7 +653,8 @@
         {
             if (ParentAlive())
             {
-                opener.GuiGraphRepaint(GuiIdx, GuiN, CanvasW, CanvasH);
+                opener.GuiGraphRepaintAllTimer();
+                //opener.GuiGraphRepaint(GuiIdx, GuiN, CanvasW, CanvasH);
             }
         }
 

@@ -20,7 +20,7 @@ let LayoutStatusInfo;
 function LayoutLoadConf()
 {
     document.getElementById("LayoutConfRowsCols").selectedIndex = DataGetIDefault(StoragePrefix + "LayoutConfRowsCols", 1);
-    document.getElementById("LayoutConfBtnHeight").value = DataGetIDefault(StoragePrefix + "LayoutConfBtnHeight", 50);
+    document.getElementById("LayoutConfBtnHeight").value = DataGetIDefault(StoragePrefix + "LayoutConfBtnHeight", 30);
     document.getElementById("LayoutConfInstrQuan").value = LayoutConfInstrQuan / 1000;
     document.getElementById("LayoutConfGraphPeriod").value = DataGetIDefault(StoragePrefix + "LayoutConfGraphPeriod", 500);
     document.getElementById("LayoutConfWidgetFontSize").value = DataGetIDefault(StoragePrefix + "LayoutConfWidgetFontSize", 12);
