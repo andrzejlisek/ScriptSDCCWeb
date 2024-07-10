@@ -25,7 +25,7 @@ Additional capabilities:
 * Visualize memory occupation for any Intel HEX file, even when the file is not compatible with **ScriptSDCC**\.
 * Decompilation of MCS51/Z180/MOC65C02 code into assembly language\.
 
-The ScriptSDCC online is available here: [https://andrzejlisek\.github\.io/ScriptSDCCWeb/](https://andrzejlisek.github.io/ScriptSDCCWeb/ "https://andrzejlisek.github.io/ScriptSDCCWeb/") 
+The ScriptSDCC online is available here: [https://andrzejlisek\.github\.io/ScriptSDCCWeb/ProjWeb/index\.html](https://andrzejlisek.github.io/ScriptSDCCWeb/ "https://andrzejlisek.github.io/ScriptSDCCWeb/") 
 
 # Working principle
 
