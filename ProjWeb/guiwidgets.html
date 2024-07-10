@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>ScriptSDCC</title>
+    <style>
+        *
+        {
+            box-sizing: border-box;
+        }
+        .bodyapp
+        {
+            margin: 0px;
+            overflow: hidden;
+            height: 100%;
+            width: 100%;
+        }
+        .divclass0
+        {
+            border: 1px solid #000000;
+            font-size: 0px;
+            margin: 0px;
+            padding: 0px;
+        }
+        .divclass
+        {
+            border: 1px solid #000000;
+            display: inline-block;
+            overflow: hidden;
+            text-overflow: clip;
+        }
+    </style>
+  </head>
+  <body class="bodyapp">
+    <div id="div0" class="divclass0" style="width:100vw;height:100vh">
+    </div>
+    
+    <script type='text/javascript'>
+
+        let IdThis = Date.now();
+        let IdParent = 0;
+
+        let EventEnabled = true;
+        let GuiN = -1;
+        let GuiIdx = -1;
+        
+        let WidgetFontSize = "12px";
+        
+        function SetWidgetFontSize(X)
+        {
+            WidgetFontSize = X + "px";
+        }
+
+        function SyncId(Id, N, Idx)
+        {
+            IdParent = Id;
+            GuiN = N;
+            GuiIdx = Idx;
+            document.title = "ScriptSDCC - Widgets " + N;
+            return IdThis;
+        }
+
+        function GetId()
+        {
+            return IdThis;
+        }
+
+        function ParentAlive()
+        {
+            if (opener)
+            {
+                if ((opener.GuiGetId) && (!opener.closed))
+                {
+                    if (opener.GuiGetId() == IdParent)
+                    {
+                        return true;
+                    }
+                }
+            }
+            window.close();
+            return false;
+        }
+
+        function WidgetEventFunction(Evt)
+        {
+            if (!EventEnabled)
+            {
+                return;
+            }
+            
+        
+            Evt = Evt || window.event;
+            const EvtSender = Evt.target || Evt.srcElement;
+            const WidgetId = parseInt(EvtSender.id.substr(3));
+
+            switch (parseInt(WidgetParamGet(WidgetId, 127)))
+            {
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                case 6:
+                    {
+                        if (ParentAlive())
+                        {
+                            opener.GuiWidgetEvent(GuiIdx, GuiN, WidgetId, WidgetParamGet(WidgetId, 0));
+                            return;
+                        }
+                    }
+                    return;
+            }
+            
+        }
+
+
+        // Id
+        // ParId
+        // Object
+        // Orientation
+        // Type
+        //  0.None
+        //  1.Label
+        //  2.Button
+        //  3.Switch
+        //  4.Textbox
+        //  5.Slider
+        //  6.Multiline
+        
+        let WidgetList = [];
+        const WidgetNullNumber = 32767;
+        WidgetList.push([0, 0, document.getElementById("div0"), 0, 0]);
+        
+        function WidgetListPos(WidgetId)
+        {
+            for (let I = 0; I < WidgetList.length; I++)
+            {
+                if (WidgetList[I][0] == WidgetId)
+                {
+                    return I;
+                }
+            }
+            return WidgetNullNumber;
+        }
+
+        function WidgetParamGet(WidgetId, ParamType)
+        {
+            const ListPos = WidgetListPos(WidgetId);
+            if (ListPos == WidgetNullNumber)
+            {
+                return 0;
+            }
+            const ListPosPar = WidgetListPos(WidgetList[ListPos][1]);
+            if (ListPosPar == WidgetNullNumber)
+            {
+                return 0;
+            }
+            switch (ParamType)
+            {
+                case 0: // Value
+                    {
+                        const CtrlObj = document.getElementById("val" + WidgetId);
+                        switch (WidgetList[ListPos][4])
+                        {
+                            case 1:
+                                return CtrlObj.innerHTML;
+                            case 2:
+                                return CtrlObj.value;
+                            case 3:
+                                if (CtrlObj.checked)
+                                {
+                                    return "1";
+                                }
+                                else
+                                {
+                                    return "0";
+                                }
+                                break;
+                            case 4:
+                                return CtrlObj.value;
+                            case 5:
+                                return "" + CtrlObj.value + "";
+                            case 6:
+                                return CtrlObj.value;
+                        }
+                    }
+                    return "";
+                case 1: // Orientation
+                    if (WidgetList[ListPos][3])
+                    {
+                        return "1";
+                    }
+                    else
+                    {
+                        return "0";
+                    }
+
+                case 127: // Type
+                    return "" + (WidgetList[ListPos][4]) + "";
+            }
+        }
+
+        function WidgetParamSet(WidgetId, ParamType, ParamValue)
+        {
+            const ListPos = WidgetListPos(WidgetId);
+            if (ListPos == WidgetNullNumber)
+            {
+                return;
+            }
+            const ListObj = WidgetList[ListPos][2];
+            const WidgetIdPar = WidgetList[ListPos][1];
+            const ListPosPar = WidgetListPos(WidgetIdPar);
+            if (ListPosPar == WidgetNullNumber)
+            {
+                return;
+            }
+            const ListObjPar = WidgetList[ListPosPar][2];
+            switch (ParamType)
+            {
+                case 0: // Value
+                    EventEnabled = false;
+                    {
+                        const CtrlObj = document.getElementById("val" + WidgetId);
+                        switch (WidgetList[ListPos][4])
+                        {
+                            case 1:
+                                CtrlObj.innerHTML = ParamValue;
+                                break;
+                            case 2:
+                                CtrlObj.value = ParamValue;
+                                break;
+                            case 3:
+                                if ((ParamValue != "") && (ParamValue != "0"))
+                                {
+                                    CtrlObj.checked = true;
+                                }
+                                else
+                                {
+                                    CtrlObj.checked = false;
+                                }
+                                break;
+                            case 4:
+                                CtrlObj.value = ParamValue;
+                                break;
+                            case 5:
+                                CtrlObj.value = parseInt(ParamValue);
+                                break;
+                            case 6:
+                                CtrlObj.value = ParamValue;
+                                break;
+                        }
+                    }
+                    EventEnabled = true;
+                    return;
+                case 1: // Orientation
+                    EventEnabled = false;
+                    WidgetList[ListPos][3] = parseInt(ParamValue);
+                    EventEnabled = true;
+                    return;
+                    
+                case 2: // Minimum
+                    EventEnabled = false;
+                    {
+                        const CtrlObj = document.getElementById("val" + WidgetId);
+                        switch (WidgetList[ListPos][4])
+                        {
+                            case 1: // Label
+                            case 2: // Button
+                            case 4: // Text box
+                            case 6: // Multiline text
+                                CtrlObj.value = ParamValue + CtrlObj.value;
+                                break;
+                            case 5: // Slider
+                                CtrlObj.min = parseInt(ParamValue);
+                                break;
+                        }
+                    }
+                    EventEnabled = true;
+                    return;
+                    
+                case 3: // Maximum
+                    EventEnabled = false;
+                    {
+                        const CtrlObj = document.getElementById("val" + WidgetId);
+                        switch (WidgetList[ListPos][4])
+                        {
+                            case 1: // Label
+                            case 2: // Button
+                            case 4: // Text box
+                            case 6: // Multiline text
+                                CtrlObj.value = CtrlObj.value + ParamValue;
+                                break;
+                            case 5: // Slider
+                                CtrlObj.max = parseInt(ParamValue);
+                                break;
+                        }
+                    }
+                    EventEnabled = true;
+                    return;
+
+                case 127: // Type
+                    EventEnabled = false;
+                    {
+                        ParamValue = parseInt(ParamValue);
+                        WidgetList[ListPos][4] = ParamValue;
+                        
+                        while (ListObj.children.length > 0)
+                        {
+                            ListObj.removeChild(ListObj.children[ListObj.children.length - 1]);
+                        }
+                        
+                        let WidObj;
+                        let WidObjX;
+                        
+                        switch (ParamValue)
+                        {
+                            case 1: // Label
+                                WidObj = document.createElement("div");
+                                WidObjX = document.createElement("div");
+                                ListObj.appendChild(WidObj);
+                                WidObj.appendChild(WidObjX);
+                                WidObj.style["font-size"] = WidgetFontSize;
+                                WidObjX.innerHTML = "";
+                                WidObj.style["display"] = "flex";
+                                WidObj.style["flex-direction"] = "row";
+                                WidObj.style["align-items"] = "center";
+                                WidObj.style["text-align"] = "center";
+                                WidObj.style["width"] = "100%";
+                                WidObjX.style["width"] = "100%";
+                                WidObj.style["height"] = "100%";
+                                WidObjX.setAttribute("id", "val" + WidgetId);
+                                //const WidObjPar = document.getElementById("div" + WidgetParentId);
+                                break;
+                            case 2: // Button
+                                WidObj = document.createElement("input");
+                                WidObj.type = "button";
+                                ListObj.appendChild(WidObj);
+                                WidObj.style["font-size"] = WidgetFontSize;
+                                WidObj.style["width"] = "100%";
+                                WidObj.style["height"] = "100%";
+                                WidObj.value = "";
+                                WidObj.setAttribute("id", "val" + WidgetId);
+                                WidObj.addEventListener("click", WidgetEventFunction, false);
+                                break;
+                            case 3: // Switch
+                                WidObj = document.createElement("input");
+                                WidObj.type = "checkbox";
+                                ListObj.appendChild(WidObj);
+                                WidObj.style["width"] = "100%";
+                                WidObj.style["height"] = "100%";
+                                WidObj.style["margin-left"] = "auto";
+                                WidObj.style["margin-right"] = "auto";
+                                WidObj.setAttribute("id", "val" + WidgetId);
+                                WidObj.addEventListener("change", WidgetEventFunction, false);
+                                break;
+                            case 4: // Text box
+                                WidObj = document.createElement("input");
+                                WidObj.type = "text";
+                                ListObj.appendChild(WidObj);
+                                WidObj.style["font-size"] = WidgetFontSize;
+                                WidObj.style["width"] = "100%";
+                                WidObj.style["height"] = "100%";
+                                WidObj.style["text-align"] = "center";
+                                WidObj.value = "";
+                                WidObj.setAttribute("id", "val" + WidgetId);
+                                WidObj.addEventListener("input", WidgetEventFunction, false);
+                                break;
+                            case 5: // Slider
+                                WidObj = document.createElement("input");
+                                WidObj.type = "range";
+                                WidObj.min = -100;
+                                WidObj.max = 100;
+
+                                if (WidgetList[ListPos][3] == 0)
+                                {
+                                    //WidObj.style["appearance"] = "slider-vertical";
+                                    WidObj.style["writing-mode"] = "vertical-lr";
+                                    WidObj.style["direction"] = "rtl";
+                                }
+
+                                ListObj.appendChild(WidObj);
+                                WidObj.style["width"] = "100%";
+                                WidObj.style["height"] = "100%";
+                                WidObj.value = 0;
+                                WidObj.setAttribute("id", "val" + WidgetId);
+                                WidObj.addEventListener("input", WidgetEventFunction, false);
+                                break;
+                            case 6: // Multiline text
+                                WidObj = document.createElement("textarea");
+                                //WidObj.type = "text";
+                                ListObj.appendChild(WidObj);
+                                WidObj.style["font-size"] = WidgetFontSize;
+                                WidObj.style["width"] = "100%";
+                                WidObj.style["height"] = "100%";
+                                //WidObj.style["text-align"] = "center";
+                                WidObj.style["resize"] = "none";
+                                WidObj.style["white-space"] = "pre";
+                                WidObj.style["overflow"] = "auto";
+                                WidObj.value = "";
+                                WidObj.setAttribute("id", "val" + WidgetId);
+                                WidObj.addEventListener("input", WidgetEventFunction, false);
+                                break;
+                        }
+                    }
+                    //WidgetType = Eden::ToInt(Value);
+                    EventEnabled = true;
+                    return;
+                case 126: // Size
+                    EventEnabled = false;
+                    {
+                        if (WidgetParamGet(WidgetIdPar, 1) != "0")
+                        {
+                            if (ParamValue > 0)
+                            {
+                                ListObj.style["display"] = "";
+                                ListObj.style["width"] = ParamValue + "%";
+                            }
+                            else
+                            {
+                                ListObj.style["display"] = "none";
+                                ListObj.style["width"] = "1%";
+                            }
+                        }
+                        else
+                        {
+                            if (ParamValue > 0)
+                            {
+                                ListObj.style["display"] = "";
+                                ListObj.style["height"] = ParamValue + "%";
+                            }
+                            else
+                            {
+                                ListObj.style["display"] = "none";
+                                ListObj.style["height"] = "1%";
+                            }
+                        }
+                    }
+                    EventEnabled = true;
+                    return;
+            }
+        }
+
+        function WidgetClear()
+        {
+            for (let I = (WidgetList.length - 1); I >= 0; I--)
+            {
+                WidgetRemove(WidgetList[I][0]);
+            }
+        }
+
+        function WidgetAdd(WidgetId, WidgetParentId)
+        {
+            const ParIdPos = WidgetListPos(WidgetParentId);
+            if (ParIdPos == WidgetNullNumber)
+            {
+                return WidgetNullNumber;
+            }
+            const WidObj = document.createElement("div");
+            const WidObjPar = document.getElementById("div" + WidgetParentId);
+            WidObj.setAttribute("id", "div" + WidgetId);
+            WidObj.className = "divclass";
+            
+            WidObj.style["width"] = "100%";
+            WidObj.style["height"] = "100%";
+
+            WidObjPar.appendChild(WidObj);
+
+            WidgetList.push([WidgetId, WidgetParentId, WidObj, 0, 0]);
+            return WidgetId;
+        }
+
+        function WidgetRemove(WidgetId)
+        {
+            const ListPos = WidgetListPos(WidgetId);
+            if (ListPos == WidgetNullNumber)
+            {
+                return;
+            }
+            
+            const ListSub = [];
+            for (let I = 0; I < WidgetList.length; I++)
+            {
+                if ((WidgetList[I][1] == WidgetId) && (WidgetList[I][0] != 0))
+                {
+                    ListSub.push(WidgetList[I][0]);
+                }
+            }
+            if (ListSub.length > 0)
+            {
+                let II = ListSub.length - 1;
+                while (II >= 0)
+                {
+                    WidgetRemove(ListSub[II]);
+                    II--;
+                }
+            }
+            if (WidgetId == 0)
+            {
+                return;
+            }
+            
+            const ListObj = WidgetList[ListPos][2];
+            const WidgetIdPar = WidgetList[ListPos][1];
+            const ListPosPar = WidgetListPos(WidgetIdPar);
+            if (ListPosPar == WidgetNullNumber)
+            {
+                return;
+            }
+            const ListObjPar = WidgetList[ListPosPar][2];
+
+            ListObjPar.removeChild(ListObj);
+            WidgetList.splice(ListPos, 1);
+        }
+
+    </script>
+  </body>
+</html>

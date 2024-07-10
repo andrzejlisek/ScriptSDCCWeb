@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <meta charset="utf-8" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>ScriptSDCC</title>
+        <style>
+        
+        *
+        {
+            box-sizing: border-box;
+            -webkit-box-sizing:border-box;
+            -moz-box-sizing:border-box;
+        }
+
+        body
+        { 
+            font: 10pt Arial, sans-serif; 
+            height: 100%;
+            width: 100%;
+            margin: 0px;
+            //overflow: hidden;
+        }
+
+        div
+        {
+            padding: 0px;
+        }
+
+        input
+        {
+            margin:0;
+            padding:0;
+            //width:100%;
+        }
+
+        .canvas0
+        {
+            /*
+            image-rendering: -moz-crisp-edges;
+            image-rendering: -webkit-crisp-edges;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            */
+
+            image-rendering: optimizeSpeed;             /* Older versions of FF          */
+            image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */
+            image-rendering: -webkit-optimize-contrast; /* Safari                        */
+            image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
+            image-rendering: pixelated;                 /* Awesome future-browsers       */
+            -ms-interpolation-mode: nearest-neighbor;   /* IE                            */
+        }
+        .canvas1
+        {
+        }
+        textarea
+        {
+            resize:none;
+            white-space:pre;
+            overflow:auto;
+        }
+        
+        .keybdiv
+        {
+            margin:0;
+            padding:0;
+            border-style:none;
+            position:relative;
+        }
+        .viewport
+        {
+            margin:0;
+            padding:0;
+            border-style:none;
+            position:absolute;
+            overflow:hidden;
+        }
+        .keybfld
+        {
+            margin:0;
+            padding:0;
+            position:absolute;
+            text-align:center;
+        }
+        .initdiv
+        {
+            background-color:#FFFFFF80;
+            width:100vw;
+            height:100vh;
+            position:absolute;
+            left:0;
+            top:0;
+            color:#000000;
+            display:inline-block;
+            text-align:center;
+            vertical-align: middle;
+        }
+        .configdiv
+        {
+            color:#ffffff;
+            display:inline-block;
+            text-align:center;
+            vertical-align: middle;
+        }
+        .configbtn
+        {
+            height:12vh;
+            text-align:center;
+            vertical-align: middle;
+        }
+        
+        </style>
+    </head>
+    <body id="app">
+
+        <div id="InitScreen" class="initdiv" style="display:block;">
+        </div>
+
+        <h2 align="center">Script storage</h2>
+        <table border="1" align="center">
+            <tr><td>Storage list:</td><td><select id="StorageList"></select></td></tr>
+            <tr><td rowspan="2">Storage buttons:</td><td><input type="button" id="StorageButton1" value="Save" onclick="StorageListSave()"><input type="button" id="StorageButton2" value="Load" onclick="StorageListLoad()"><input type="button" id="StorageButton3" value="Remove" onclick="StorageListRemove()"></td></tr>
+            <tr><td><input type="button" id="StorageButton4" value="Move up" onclick="StorageListMoveU()"><input type="button" id="StorageButton5" value="Move down" onclick="StorageListMoveD()"></td></tr>
+            <tr><td>Code text:</td><td><textarea id="StorageMemoCode" rows="3" cols="15"></textarea></td></tr>
+            <tr><td>Code buttons:</td><td><input type="button" id="StorageCodeBtn1" value="Clear" onclick="StorageCodeClear()"><input type="button" id="StorageCodeBtn2" value="Copy" onclick="StorageCodeCopy()"><input type="button" id="StorageCodeBtn3" value="Paste" onclick="StorageCodePaste()"></td></tr>
+            <tr><td>Engine type:</td><td><select id="StorageMemoMachine" onchange="StorageMemoValueSave(0)">
+            <option>MCS51</option>
+            <option>Z180</option>
+            <option>MOS65C02</option>
+        </select></td></tr>
+            <tr><td>Engine memory:</td><td><select id="StorageMemoMachineMem" onchange="StorageMemoValueSave(0)">
+            <option>Common</option>
+            <option>Separated</option>
+        </select></td></tr>
+            <tr><td>Swap page:</td><td><input id="StorageMemoSwapPage" type="number" size="6" min="0" max="255" oninput="StorageMemoValueSave(5)"><span id="StorageMemoSwapPage_"></span></td></tr>
+        </table>
+        <hr>
+
+        <h2 align="center">Engines</h2>
+        <table id="TableScript" width="100%" border="1">
+        </table><br>
+
+        <h2 align="center">Widget forms</h2>
+        <table id="TableWidget" width="100%" border="1">
+        </table><br>
+
+        <h2 align="center">Graph canvases</h2>
+        <table id="TableGraphi" width="100%" border="1">
+        </table><br>
+
+        <hr>
+
+        <h2 align="center">Configuration</h2>
+        <table align="center" border="1">
+            <tr><td>Button layout (*):</td><td><select id="LayoutConfRowsCols" onchange="LayoutSaveConf()">
+                <option>1x16</option>
+                <option>2x8</option>
+                <option>4x4</option>
+            </select></td></tr>
+            <tr><td>Button and field height (*):</td><td><input id="LayoutConfBtnHeight" type="number" size="6" min="1" max="500" oninput="LayoutSaveConf()"></td></tr>
+            <tr><td>Instructions x1000 per packet:</td><td><input id="LayoutConfInstrQuan" type="number" size="6" min="1" max="100000" oninput="LayoutSaveConf()"></td></tr>
+            <tr><td>Graph repaint period in ms:</td><td><input id="LayoutConfGraphPeriod" type="number" size="6" min="1" max="100000" oninput="LayoutSaveConf()"></td></tr>
+            <tr><td>Widget font size:</td><td><input id="LayoutConfWidgetFontSize" type="number" size="6" min="1" max="100" oninput="LayoutSaveConf()"></td></tr>
+            <tr><td>Graph font size:</td><td><input id="LayoutConfGraphFontSize" type="number" size="6" min="1" max="100" oninput="LayoutSaveConf()"></td></tr>
+        </table>
+        <p align="center">The configuration is saved automatically.</p>
+        <p align="center">(*) These settings requires application restart.</p>
+
+        <canvas id="FontCanvas" width="1" height="1" style="display:none"></canvas>
+
+        <script type="text/javascript" src="unistorage.js"></script>
+        <script type="text/javascript" src="global.js"></script>
+        <script type="text/javascript" src="timing.js"></script>
+        <script type="text/javascript" src="layout.js"></script>
+        <script type="text/javascript" src="font.js"></script>
+        <script type="text/javascript" src="gui.js"></script>
+        <script type="text/javascript" src="proginit.js"></script>
+        <script type="text/javascript" src="memo.js"></script>
+        <script type="text/javascript" src="prog.js"></script>
+        <script type="text/javascript" src="datastorage.js"></script>
+        <script type="text/javascript" src="compiled/progio.js"></script>
+    </body>
+</html>

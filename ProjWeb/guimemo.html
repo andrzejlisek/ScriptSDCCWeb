@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <meta charset="utf-8" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>ScriptSDCC</title>
+        <style>
+        
+        *
+        {
+            box-sizing: border-box;
+            -webkit-box-sizing:border-box;
+            -moz-box-sizing:border-box;
+        }
+
+        body
+        { 
+            font: 10pt Arial, sans-serif; 
+            height: 100%;
+            width: 100%;
+            margin: 0px;
+            //overflow: hidden;
+        }
+
+        div
+        {
+            padding: 0px;
+        }
+
+        input
+        {
+            margin:0;
+            padding:0;
+            //width:100%;
+        }
+
+        .canvas0
+        {
+            /*
+            image-rendering: -moz-crisp-edges;
+            image-rendering: -webkit-crisp-edges;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            */
+
+            image-rendering: optimizeSpeed;             /* Older versions of FF          */
+            image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */
+            image-rendering: -webkit-optimize-contrast; /* Safari                        */
+            image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
+            image-rendering: pixelated;                 /* Awesome future-browsers       */
+            -ms-interpolation-mode: nearest-neighbor;   /* IE                            */
+        }
+        .canvas1
+        {
+        }
+        textarea
+        {
+            resize:none;
+            white-space:pre;
+            overflow:auto;
+        }
+        
+        .keybdiv
+        {
+            margin:0;
+            padding:0;
+            border-style:none;
+            position:relative;
+        }
+        .viewport
+        {
+            margin:0;
+            padding:0;
+            border-style:none;
+            position:absolute;
+            overflow:hidden;
+        }
+        .keybfld
+        {
+            margin:0;
+            padding:0;
+            position:absolute;
+            text-align:center;
+        }
+        .initdiv
+        {
+            background-color:#FFFFFF80;
+            width:100vw;
+            height:100vh;
+            position:absolute;
+            left:0;
+            top:0;
+            color:#000000;
+            display:inline-block;
+            text-align:center;
+            vertical-align: middle;
+        }
+        .configdiv
+        {
+            color:#ffffff;
+            display:inline-block;
+            text-align:center;
+            vertical-align: middle;
+        }
+        .configbtn
+        {
+            height:12vh;
+            text-align:center;
+            vertical-align: middle;
+        }
+        
+        </style>
+    </head>
+    <body id="app">
+        <canvas id="MemoCanvas" width="512" height="256" style="position:absolute;" class="canvas0" onclick="MemoryInfo(event)"></canvas>
+
+        <script type="text/javascript" src="unistorage.js"></script>
+        <script type="text/javascript" src="global.js"></script>
+        <script type='text/javascript'>
+            let IdThis = Date.now();
+            let IdParent = 0;
+            let IsZoom = false;
+
+            function SyncId(Id, N, Idx)
+            {
+                IdParent = Id;
+                GuiN = N;
+                GuiIdx = Idx;
+                document.title = "ScriptSDCC - Memory " + N;
+                WindowResize();
+                return IdThis;
+            }
+
+            function GetId()
+            {
+                return IdThis;
+            }
+
+            function MemoryInfo(Evt)
+            {
+                if (ParentAlive())
+                {
+                    const _ = MemoCanvasObj.getBoundingClientRect();
+                    //let MouseX = Evt.clientX + window.scrollX - _.left;
+                    //let MouseY = Evt.clientY + window.scrollY - _.top;
+                    let MouseX = Evt.clientX - _.left;
+                    let MouseY = Evt.clientY - _.top;
+                    let CanvasW = parseInt(MemoCanvasObj.style["width"]);
+                    let CanvasH = parseInt(MemoCanvasObj.style["height"]);
+
+                    if (MemoCommon)
+                    {
+                        MouseX = Math.floor(MouseX * 256 / CanvasW);
+                    }
+                    else
+                    {
+                        MouseX = Math.floor(MouseX * 512 / CanvasW);
+                        if (MouseX >= 256)
+                        {
+                            MouseX = MouseX - 256;
+                        }
+                    }
+                    MouseY = Math.floor(MouseY * 256 / CanvasH);
+
+                    if (confirm(NumToHex8(MouseY) + "" + NumToHex8(MouseX)))
+                    {
+                        IsZoom = !IsZoom;
+                    }
+                    WindowResize();
+                }
+            }
+
+            function ParentAlive()
+            {
+                if (opener)
+                {
+                    if ((opener.GuiGetId) && (!opener.closed))
+                    {
+                        if (opener.GuiGetId() == IdParent)
+                        {
+                            return true;
+                        }
+                    }
+                }
+                window.close();
+                return false;
+            }
+
+            const MemoCanvasObj = document.getElementById("MemoCanvas");
+            const MemoCanvasCtx = MemoCanvasObj.getContext("2d", { willReadFrequently: true });
+            const MemoCanvasData = MemoCanvasCtx.getImageData(0, 0, 512, 256);
+            let MemoCommon = true;
+
+            function WindowResize()
+            {
+                let WindowW = window.innerWidth;
+                let WindowH = window.innerHeight;
+                let CanvasW = Math.floor(WindowW / 256) * 256;
+                let CanvasH = Math.floor(WindowH / 256) * 256;
+                
+                if (WindowW < 256)
+                {
+                    CanvasW = 256;
+                    while ((WindowW < CanvasW) && (CanvasW > 1))
+                    {
+                        CanvasW = CanvasW / 2;
+                    }
+                }
+                if (WindowH < 256)
+                {
+                    CanvasH = 256;
+                    while ((WindowH < CanvasH) && (CanvasH > 1))
+                    {
+                        CanvasH = CanvasH / 2;
+                    }
+                }
+                
+                if (IsZoom)
+                {
+                    CanvasW = WindowW * 16;
+                    CanvasH = WindowH * 16;
+                    MemoCanvasObj.style["width"] = CanvasW + "px";
+                    MemoCanvasObj.style["height"] = CanvasH + "px";
+                    MemoCanvasObj.style["left"] = "0px";
+                    MemoCanvasObj.style["top"] = "0px";
+                }
+                else
+                {
+                    MemoCanvasObj.style["width"] = CanvasW + "px";
+                    MemoCanvasObj.style["height"] = CanvasH + "px";
+                    MemoCanvasObj.style["left"] = Math.floor((WindowW - CanvasW) / 2) + "px";
+                    MemoCanvasObj.style["top"] = Math.floor((WindowH - CanvasH) / 2) + "px";
+                }
+            }
+            window.addEventListener("resize", WindowResize, false);
+
+
+            function PaintMemo(MemoMapText, MemoCommon_, MemoSwapPage)
+            {
+                const ColorDiff = 8;
+                MemoCommon = MemoCommon_;
+                let I_ = 3;
+                while (I_ < MemoMapText.length)
+                {
+                    let MemPageText = MemoMapText.substr(I_, 2);
+                    I_+= 2;
+                    if (MemPageText != "!!")
+                    {
+                        let MemPage = HexToNum8(MemPageText);
+
+                        let ColorDiff_ = (MemPage & 1) ? ColorDiff : (0 - ColorDiff);
+                        let Ptr = MemPage * 2048;
+                        let IsSwap = (MemPage == MemoSwapPage);
+
+                        for (let X = 0; X < 256; X++)
+                        {
+                            let R1 = ColorDiff;
+                            let G1 = ColorDiff;
+                            let B1 = ColorDiff;
+                            let R2 = ColorDiff;
+                            let G2 = ColorDiff;
+                            let B2 = ColorDiff;
+
+                            switch (MemoMapText[I_])
+                            {
+                                case 'B':                       G2 = 255 - ColorDiff;                                             break;
+                                case 'C': R2 = 255 - ColorDiff;                                                                   break;
+                                case 'D': R2 = 255 - ColorDiff; G2 = 255 - ColorDiff;                                             break;
+                                case 'E':                                                                   B1 = 255 - ColorDiff; break;
+                                case 'F':                       G2 = 255 - ColorDiff;                       B1 = 255 - ColorDiff; break;
+                                case 'G': R2 = 255 - ColorDiff;                                             B1 = 255 - ColorDiff; break;
+                                case 'H': R2 = 255 - ColorDiff; G2 = 255 - ColorDiff;                       B1 = 255 - ColorDiff; break;
+                                case 'I':                                             G1 = 255 - ColorDiff;                       break;
+                                case 'J':                       G2 = 255 - ColorDiff; G1 = 255 - ColorDiff;                       break;
+                                case 'K': R2 = 255 - ColorDiff;                       G1 = 255 - ColorDiff;                       break;
+                                case 'L': R2 = 255 - ColorDiff; G2 = 255 - ColorDiff; G1 = 255 - ColorDiff;                       break;
+                                case 'M':                                             G1 = 255 - ColorDiff; B1 = 255 - ColorDiff; break;
+                                case 'N':                       G2 = 255 - ColorDiff; G1 = 255 - ColorDiff; B1 = 255 - ColorDiff; break;
+                                case 'O': R2 = 255 - ColorDiff;                       G1 = 255 - ColorDiff; B1 = 255 - ColorDiff; break;
+                                case 'P': R2 = 255 - ColorDiff; G2 = 255 - ColorDiff; G1 = 255 - ColorDiff; B1 = 255 - ColorDiff; break;
+                            }
+
+                            if (IsSwap)
+                            {
+                                R2 = Math.max(R2, 128);
+                                G2 = Math.max(G2, 128);
+                                B2 = Math.max(B2, 128);
+                            }
+                            
+                            if (MemoCommon)
+                            {
+                                R2 = Math.max(R1, R2);
+                                G2 = Math.max(G1, G2);
+                                B2 = Math.max(B1, B2);
+                            
+                                MemoCanvasData.data[Ptr + 0] = ColorDiff_ + R2;
+                                MemoCanvasData.data[Ptr + 1] = ColorDiff_ + G2;
+                                MemoCanvasData.data[Ptr + 2] = ColorDiff_ + B2;
+                                MemoCanvasData.data[Ptr + 3] = 255;
+                                Ptr += 4;
+                                MemoCanvasData.data[Ptr + 0] = ColorDiff_ + R2;
+                                MemoCanvasData.data[Ptr + 1] = ColorDiff_ + G2;
+                                MemoCanvasData.data[Ptr + 2] = ColorDiff_ + B2;
+                                MemoCanvasData.data[Ptr + 3] = 255;
+                                Ptr += 4;
+                            }
+                            else
+                            {
+                                MemoCanvasData.data[Ptr + 0] = ColorDiff_ + R1;
+                                MemoCanvasData.data[Ptr + 1] = ColorDiff_ + G1;
+                                MemoCanvasData.data[Ptr + 2] = ColorDiff_ + Math.max(B1, 32);
+                                MemoCanvasData.data[Ptr + 3] = 255;
+                                Ptr += 1024;
+                                MemoCanvasData.data[Ptr + 0] = ColorDiff_ + Math.max(R2, 32);
+                                MemoCanvasData.data[Ptr + 1] = ColorDiff_ + Math.max(G2, 32);
+                                MemoCanvasData.data[Ptr + 2] = ColorDiff_ + B2;
+                                MemoCanvasData.data[Ptr + 3] = 255;
+                                Ptr -= 1020;
+                            }
+                            
+                            I_++;
+                            ColorDiff_ = 0 - ColorDiff_;
+                        }
+                        MemoCanvasCtx.putImageData(MemoCanvasData, 0, 0);
+                    }
+                }
+
+
+            }
+        </script>
+
+
+    </body>
+</html>

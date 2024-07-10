@@ -1,0 +1,713 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>ScriptSDCC</title>
+    <style>
+        *
+        {
+            box-sizing: border-box;
+        }
+        .bodyapp
+        {
+            margin: 0px;
+            overflow: hidden;
+            height: 100%;
+            width: 100%;
+        }
+        .divclass0
+        {
+            border: 1px solid #000000;
+            font-size: 0px;
+            margin: 0px;
+            padding: 0px;
+        }
+        .divclass
+        {
+            border: 1px solid #000000;
+            display: inline-block;
+            overflow: hidden;
+            text-overflow: clip;
+        }
+        .canvas0
+        {
+            /*
+            image-rendering: -moz-crisp-edges;
+            image-rendering: -webkit-crisp-edges;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            */
+
+            image-rendering: optimizeSpeed;             /* Older versions of FF          */
+            image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */
+            image-rendering: -webkit-optimize-contrast; /* Safari                        */
+            image-rendering: -o-crisp-edges;            /* OS X & Windows Opera (12.02+) */
+            image-rendering: pixelated;                 /* Awesome future-browsers       */
+            -ms-interpolation-mode: nearest-neighbor;   /* IE                            */
+        }
+        .initdiv
+        {
+            background-color:#FFFFFFC0;
+            width:100vw;
+            height:100vh;
+            position:absolute;
+            left:0;
+            top:0;
+            color:#000000;
+            display:inline-block;
+            text-align:center;
+            vertical-align: middle;
+        }
+        .ctrlscreen
+        {
+            width:100vw;
+            height:100vh;
+            position:absolute;
+            left:0;
+            top:0;
+            display:inline-block;
+            text-align:center;
+            vertical-align: middle;
+        }
+        .ctrl
+        {
+            width:100%;
+        }
+    </style>
+  </head>
+  <body class="bodyapp">
+
+    <input type="button" id="ScreenBtn1" value="-" class="ctrlscreen" style="display:none;left:0%;top=0%;width:0%;height:0%" onclick="ParamsFromButtons(-1)">
+    <input type="button" id="ScreenBtn2" value="+" class="ctrlscreen" style="display:none;left:0%;top=0%;width:0%;height:0%" onclick="ParamsFromButtons( 1)">
+  
+    <div id="GraphSettings" class="initdiv" style="display:none;">
+        <input type="button" id="ParamTabClose1" value="Close" onclick="SettingsHide()">
+
+        <input type="button" id="ParamTab1" value="Display" onclick="SettingsPage(1)">
+        <input type="button" id="ParamTab2" value="Scale/rotate" onclick="SettingsPage(2)">
+        <input type="button" id="ParamTab3" value="Lighting" onclick="SettingsPage(3)">
+
+        <input type="button" id="ParamTabClose2" value="Close" onclick="SettingsHide()">
+        <br>
+
+        <div id="GraphSettings1" style="display:block;">
+            <table align="center" border="1">
+                <tr><td>Clear canvas</td><td><input class="ctrl" id="Param_Clear" type="button" value="Clear" onclick="GraphClear()"></td></tr>
+                <tr><td>Background</td><td><input class="ctrl" id="Param_Color" onchange="ParamsFromControls(0, 0)" type="color" value="#000000"></td></tr>
+                <tr><td>Point size</td><td><input class="ctrl" id="Param_PlotSizeP" onchange="ParamsFromControls(0, 1)" type="number" min="-50" max="50" value="0"></td></tr>
+                <tr><td>Line size</td><td><input class="ctrl" id="Param_PlotSizeL" onchange="ParamsFromControls(0, 2)" type="number" min="0" max="50" value="0"></td></tr>
+                <tr><td>Surfaces</td><td><input class="ctrl" id="Param_PlotSurface" onchange="ParamsFromControls(0, 0)" type="checkbox"></td></tr>
+                <tr><td>Depth min</td><td><input class="ctrl" id="Param_BoundZMin" onchange="ParamsFromControls(0, 4)" type="number" min="-1000000" max="1000000" value="-1000"></td></tr>
+                <tr><td>Depth max</td><td><input class="ctrl" id="Param_BoundZMax" onchange="ParamsFromControls(0, 5)" type="number" min="-1000000" max="1000000" value="1000"></td></tr>
+                <tr><td>Depth both</td><td><input class="ctrl" id="Param_BoundZBoth" onchange="ParamsFromControls(0, 6)" type="checkbox"></td></tr>
+                <tr><td>Text</td><td><input class="ctrl" id="Param_PlotText" onchange="ParamsFromControls(0, 0)" type="checkbox"></td></tr>
+                <tr><td>Inverse</td><td><input class="ctrl" id="Param_InverseDraw" onchange="ParamsFromControls(0, 0)" type="checkbox"></td></tr>
+                <tr><td>Step</td><td><input class="ctrl" id="Param_Step" onchange="ParamsFromControls(99, 0)" type="number" min="1" max="1000000" value="10"></td></tr>
+                <tr><td>Zoom</td><td><input class="ctrl" id="Param_Decimation" onchange="ParamsFromControls(99, 3)" type="number" min="1" max="20" value="1"></td></tr>
+                <tr><td>Buttons</td><td><input class="ctrl" id="Param_Buttons" onchange="ParamsFromControls(99, 0)" type="number" min="-50" max="50" value="0"></td></tr>
+            </table>
+        </div>
+        <div id="GraphSettings2" style="display:none;">
+            <table align="center" border="1">
+                <tr><td></td><td>X</td><td>Y</td><td>Z</td></tr>
+                <tr><td>Scale X</td><td><input class="ctrl" id="Param_GrScaleXX" onchange="ParamsFromControls(1, 11)" type="number" min="-1000000" max="1000000"></td><td><input class="ctrl" id="Param_GrScaleXY" onchange="ParamsFromControls(1, 12)" type="number" min="-1000000" max="1000000"></td><td><input class="ctrl" id="Param_GrScaleXZ" onchange="ParamsFromControls(1, 13)" type="number" min="-1000000" max="1000000"></td></tr>
+                <tr><td>Scale Y</td><td><input class="ctrl" id="Param_GrScaleYX" onchange="ParamsFromControls(1, 14)" type="number" min="-1000000" max="1000000"></td><td><input class="ctrl" id="Param_GrScaleYY" onchange="ParamsFromControls(1, 15)" type="number" min="-1000000" max="1000000"></td><td><input class="ctrl" id="Param_GrScaleYZ" onchange="ParamsFromControls(1, 16)" type="number" min="-1000000" max="1000000"></td></tr>
+                <tr><td>Scale Z</td><td><input class="ctrl" id="Param_GrScaleZX" onchange="ParamsFromControls(1, 17)" type="number" min="-1000000" max="1000000"></td><td><input class="ctrl" id="Param_GrScaleZY" onchange="ParamsFromControls(1, 18)" type="number" min="-1000000" max="1000000"></td><td><input class="ctrl" id="Param_GrScaleZZ" onchange="ParamsFromControls(1, 19)" type="number" min="-1000000" max="1000000"></td></tr>
+                <tr><td>Scale factor</td><td><input class="ctrl" id="Param_GrScaleX" onchange="ParamsFromControls(2, 21)" type="number" min="-1000000" max="1000000"></td><td><input class="ctrl" id="Param_GrScaleY" onchange="ParamsFromControls(2, 22)" type="number" min="-1000000" max="1000000"></td><td><input class="ctrl" id="Param_GrScaleZ" onchange="ParamsFromControls(2, 23)" type="number" min="-1000000" max="1000000"></td></tr>
+                <tr><td>Pan data</td><td><input class="ctrl" id="Param_GrOffset1X" onchange="ParamsFromControls(2, 24)" type="number" min="-1000000" max="1000000"></td><td><input class="ctrl" id="Param_GrOffset1Y" onchange="ParamsFromControls(2, 25)" type="number" min="-1000000" max="1000000"></td><td><input class="ctrl" id="Param_GrOffset1Z" onchange="ParamsFromControls(2, 26)" type="number" min="-1000000" max="1000000"></td></tr>
+                <tr><td>Pan draw</td><td><input class="ctrl" id="Param_GrOffset2X" onchange="ParamsFromControls(2, 27)" type="number" min="-1000000" max="1000000"></td><td><input class="ctrl" id="Param_GrOffset2Y" onchange="ParamsFromControls(2, 28)" type="number" min="-1000000" max="1000000"></td><td><input class="ctrl" id="Param_GrOffset2Z" onchange="ParamsFromControls(2, 29)" type="number" min="-1000000" max="1000000"></td></tr>
+                <tr><td>Rot data order</td><td colspan="3"><select class="ctrl" id="Param_Rot1Order" onchange="ParamsFromControls(3, 0)">
+                    <option>XYZ</option>
+                    <option>XZY</option>
+                    <option>YZX</option>
+                    <option>YXZ</option>
+                    <option>ZXY</option>
+                    <option>ZYX</option>
+                </select></td></tr>
+                <tr><td>Rotate data</td><td><input class="ctrl" id="Param_Rot1X" onchange="ParamsFromControls(3, 31)" type="number" min="-360" max="360"></td><td><input class="ctrl" id="Param_Rot1Y" onchange="ParamsFromControls(3, 32)" type="number" min="-360" max="360"></td><td><input class="ctrl" id="Param_Rot1Z" onchange="ParamsFromControls(3, 33)" type="number" min="-360" max="360"></td></tr>
+                <tr><td>Rot draw order</td><td colspan="3"><select class="ctrl" id="Param_Rot2Order" onchange="ParamsFromControls(3, 0)">
+                    <option>XYZ</option>
+                    <option>XZY</option>
+                    <option>YZX</option>
+                    <option>YXZ</option>
+                    <option>ZXY</option>
+                    <option>ZYX</option>
+                </select></td></tr>
+                <tr><td>Rotate draw</td><td><input class="ctrl" id="Param_Rot2X" onchange="ParamsFromControls(3, 34)" type="number" min="-360" max="360"></td><td><input class="ctrl" id="Param_Rot2Y" onchange="ParamsFromControls(3, 35)" type="number" min="-360" max="360"></td><td><input class="ctrl" id="Param_Rot2Z" onchange="ParamsFromControls(3, 36)" type="number" min="-360" max="360"></td></tr>
+            </table>
+        </div>
+        <div id="GraphSettings3" style="display:none;">
+            <table align="center" border="1">
+                <tr><td>Light type</td><td><select class="ctrl" id="Param_LightMode" onchange="ParamsFromControls(4)">
+                    <option>None</option>
+                    <option>Distance</option>
+                    <option>Angle</option>
+                </select></td></tr>
+                <tr><td>Azimuth</td><td><input class="ctrl" id="Param_LightAngleH" onchange="ParamsFromControls(4, 41)" type="number" min="-360" max="360" value="0"></td></tr>
+                <tr><td>Elevation</td><td><input class="ctrl" id="Param_LightAngleV" onchange="ParamsFromControls(4, 42)" type="number" min="-360" max="360" value="0"></td></tr>
+                <tr><td>Bias</td><td><input class="ctrl" id="Param_LightDist0" onchange="ParamsFromControls(4, 43)" type="number" min="-1000000" max="1000000" value="0"></td></tr>
+                <tr><td>Front</td><td><input class="ctrl" id="Param_LightDist1" onchange="ParamsFromControls(4, 44)" type="number" min="-1000000" max="1000000" value="0"></td></tr>
+                <tr><td>Back</td><td><input class="ctrl" id="Param_LightDist2" onchange="ParamsFromControls(4, 45)" type="number" min="-1000000" max="1000000" value="0"></td></tr>
+            </table>
+        </div>
+
+    </div>
+  
+    <canvas class="canvas0" id="graphscreen" width="1" height="1" onclick="SettingsShow();"></canvas>
+    
+    <script type='text/javascript'>
+
+        let IdThis = Date.now();
+        let IdParent = 0;
+
+        let Param__Number = 0;
+        let Param__Part = 0;
+
+        let Param_ColorR = 0;
+        let Param_ColorG = 0;
+        let Param_ColorB = 0;
+        let Param_PlotSizeP = 1;
+        let Param_PlotSizeL = 1;
+        let Param_BoundZMin = -1000;
+        let Param_BoundZMax = 1000;
+        let Param_BoundZBoth = 0;
+        let Param_PlotSurface = 1;
+        let Param_PlotText = 1;
+        let Param_InverseDraw = 0;
+        let Param_Step = 10;
+        let Param_Decimation = 1;
+        let Param_Buttons = 0;
+
+        let Param_GrScaleXX = 1000;
+        let Param_GrScaleXY = 0;
+        let Param_GrScaleXZ = 0;
+        let Param_GrScaleYX = 0;
+        let Param_GrScaleYY = 1000;
+        let Param_GrScaleYZ = 0;
+        let Param_GrScaleZX = 0;
+        let Param_GrScaleZY = 0;
+        let Param_GrScaleZZ = 1000;
+        let Param_GrScaleX = 1000;
+        let Param_GrScaleY = 1000;
+        let Param_GrScaleZ = 1000;
+        let Param_GrOffset1X = 0;
+        let Param_GrOffset1Y = 0;
+        let Param_GrOffset1Z = 0;
+        let Param_GrOffset2X = 0;
+        let Param_GrOffset2Y = 0;
+        let Param_GrOffset2Z = 0;
+        let Param_Rot1Order = 0;
+        let Param_Rot1X = 0;
+        let Param_Rot1Y = 0;
+        let Param_Rot1Z = 0;
+        let Param_Rot2Order = 0;
+        let Param_Rot2X = 0;
+        let Param_Rot2Y = 0;
+        let Param_Rot2Z = 0;
+
+        let Param_LightMode = 0;
+        let Param_LightAngleH = 0;
+        let Param_LightAngleV = 0;
+        let Param_LightDist0 = 0;
+        let Param_LightDist1 = -90;
+        let Param_LightDist2 = 90;
+
+
+        function ParamsToControls()
+        {
+            let StrR = ("0"+(Number(Param_ColorR).toString(16))).slice(-2).toUpperCase();
+            let StrG = ("0"+(Number(Param_ColorG).toString(16))).slice(-2).toUpperCase();
+            let StrB = ("0"+(Number(Param_ColorB).toString(16))).slice(-2).toUpperCase();
+            document.getElementById("Param_Color").value = "#" + StrR + StrG + StrB;
+            document.getElementById("Param_PlotSizeP").value = Param_PlotSizeP;
+            document.getElementById("Param_PlotSizeL").value = Param_PlotSizeL;
+            document.getElementById("Param_BoundZMin").value = Param_BoundZMin;
+            document.getElementById("Param_BoundZMax").value = Param_BoundZMax;
+            document.getElementById("Param_BoundZBoth").checked = (Param_BoundZBoth);
+            document.getElementById("Param_PlotSurface").checked = (Param_PlotSurface > 0);
+            document.getElementById("Param_PlotText").checked = (Param_PlotText);
+            document.getElementById("Param_InverseDraw").checked = (Param_InverseDraw);
+            document.getElementById("Param_Step").value = Param_Step;
+            document.getElementById("Param_Decimation").value = Param_Decimation;
+
+            document.getElementById("Param_GrScaleXX").value = Param_GrScaleXX;
+            document.getElementById("Param_GrScaleXY").value = Param_GrScaleXY;
+            document.getElementById("Param_GrScaleXZ").value = Param_GrScaleXZ;
+            document.getElementById("Param_GrScaleYX").value = Param_GrScaleYX;
+            document.getElementById("Param_GrScaleYY").value = Param_GrScaleYY;
+            document.getElementById("Param_GrScaleYZ").value = Param_GrScaleYZ;
+            document.getElementById("Param_GrScaleZX").value = Param_GrScaleZX;
+            document.getElementById("Param_GrScaleZY").value = Param_GrScaleZY;
+            document.getElementById("Param_GrScaleZZ").value = Param_GrScaleZZ;
+            document.getElementById("Param_GrScaleX").value = Param_GrScaleX;
+            document.getElementById("Param_GrScaleY").value = Param_GrScaleY;
+            document.getElementById("Param_GrScaleZ").value = Param_GrScaleZ;
+            document.getElementById("Param_GrOffset1X").value = Param_GrOffset1X;
+            document.getElementById("Param_GrOffset1Y").value = Param_GrOffset1Y;
+            document.getElementById("Param_GrOffset1Z").value = Param_GrOffset1Z;
+            document.getElementById("Param_GrOffset2X").value = Param_GrOffset2X;
+            document.getElementById("Param_GrOffset2Y").value = Param_GrOffset2Y;
+            document.getElementById("Param_GrOffset2Z").value = Param_GrOffset2Z;
+            document.getElementById("Param_Rot1Order").selectedIndex = Param_Rot1Order;
+            document.getElementById("Param_Rot1X").value = Param_Rot1X;
+            document.getElementById("Param_Rot1Y").value = Param_Rot1Y;
+            document.getElementById("Param_Rot1Z").value = Param_Rot1Z;
+            document.getElementById("Param_Rot2Order").selectedIndex = Param_Rot2Order;
+            document.getElementById("Param_Rot2X").value = Param_Rot2X;
+            document.getElementById("Param_Rot2Y").value = Param_Rot2Y;
+            document.getElementById("Param_Rot2Z").value = Param_Rot2Z;
+
+            document.getElementById("Param_LightMode").selectedIndex = Param_LightMode;
+            document.getElementById("Param_LightAngleH").value = Param_LightAngleH;
+            document.getElementById("Param_LightAngleV").value = Param_LightAngleV;
+            document.getElementById("Param_LightDist0").value = Param_LightDist0;
+            document.getElementById("Param_LightDist1").value = Param_LightDist1;
+            document.getElementById("Param_LightDist2").value = Param_LightDist2;
+        }
+
+        function ParamsFromButtonsChange(Variable, Control, Direction)
+        {
+            Variable = Variable + Direction;
+            const CtrlMin = parseInt(document.getElementById(Control).min);
+            const CtrlMax = parseInt(document.getElementById(Control).max);
+            if (Variable < CtrlMin) Variable = CtrlMin;
+            if (Variable > CtrlMax) Variable = CtrlMax;
+            document.getElementById(Control).value = Variable;
+            return Variable;
+        }
+        
+        function ParamsFromButtons(Direction)
+        {
+            const DirectionS = Direction * Param_Step;
+            switch (Param__Number)
+            {
+                case 1: Param_PlotSizeP = ParamsFromButtonsChange(Param_PlotSizeP, "Param_PlotSizeP", Direction); break;
+                case 2: Param_PlotSizeL = ParamsFromButtonsChange(Param_PlotSizeL, "Param_PlotSizeL", Direction); break;
+                case 3: Param_Decimation = ParamsFromButtonsChange(Param_Decimation, "Param_Decimation", Direction); break;
+                case 4: Param_BoundZMin = ParamsFromButtonsChange(Param_BoundZMin, "Param_BoundZMin", DirectionS); if (Param_BoundZBoth) Param_BoundZMax = ParamsFromButtonsChange(Param_BoundZMax, "Param_BoundZMax", DirectionS); break;
+                case 5: Param_BoundZMax = ParamsFromButtonsChange(Param_BoundZMax, "Param_BoundZMax", DirectionS); if (Param_BoundZBoth) Param_BoundZMin = ParamsFromButtonsChange(Param_BoundZMin, "Param_BoundZMin", DirectionS); break;
+
+                case 11: Param_GrScaleXX = ParamsFromButtonsChange(Param_GrScaleXX, "Param_GrScaleXX", DirectionS); break;
+                case 12: Param_GrScaleXY = ParamsFromButtonsChange(Param_GrScaleXY, "Param_GrScaleXY", DirectionS); break;
+                case 19: Param_GrScaleZZ = ParamsFromButtonsChange(Param_GrScaleZZ, "Param_GrScaleZZ", DirectionS); break;
+
+                case 21: Param_GrScaleX = ParamsFromButtonsChange(Param_GrScaleX, "Param_GrScaleX", DirectionS); break;
+                case 22: Param_GrScaleY = ParamsFromButtonsChange(Param_GrScaleY, "Param_GrScaleY", DirectionS); break;
+                case 23: Param_GrScaleZ = ParamsFromButtonsChange(Param_GrScaleZ, "Param_GrScaleZ", DirectionS); break;
+                case 24: Param_GrOffset1X = ParamsFromButtonsChange(Param_GrOffset1X, "Param_GrOffset1X", DirectionS); break;
+                case 25: Param_GrOffset1Y = ParamsFromButtonsChange(Param_GrOffset1Y, "Param_GrOffset1Y", DirectionS); break;
+                case 26: Param_GrOffset1Z = ParamsFromButtonsChange(Param_GrOffset1Z, "Param_GrOffset1Z", DirectionS); break;
+                case 27: Param_GrOffset2X = ParamsFromButtonsChange(Param_GrOffset2X, "Param_GrOffset2X", DirectionS); break;
+                case 28: Param_GrOffset2Y = ParamsFromButtonsChange(Param_GrOffset2Y, "Param_GrOffset2Y", DirectionS); break;
+                case 29: Param_GrOffset2Z = ParamsFromButtonsChange(Param_GrOffset2Z, "Param_GrOffset2Z", DirectionS); break;
+                case 31: Param_Rot1X = ParamsFromButtonsChange(Param_Rot1X, "Param_Rot1X", DirectionS); break;
+                case 32: Param_Rot1Y = ParamsFromButtonsChange(Param_Rot1Y, "Param_Rot1Y", DirectionS); break;
+                case 33: Param_Rot1Z = ParamsFromButtonsChange(Param_Rot1Z, "Param_Rot1Z", DirectionS); break;
+                case 34: Param_Rot2X = ParamsFromButtonsChange(Param_Rot2X, "Param_Rot2X", DirectionS); break;
+                case 35: Param_Rot2Y = ParamsFromButtonsChange(Param_Rot2Y, "Param_Rot2Y", DirectionS); break;
+                case 36: Param_Rot2Z = ParamsFromButtonsChange(Param_Rot2Z, "Param_Rot2Z", DirectionS); break;
+
+                case 41: Param_LightAngleH = ParamsFromButtonsChange(Param_LightAngleH, "Param_LightAngleH",DirectionS); break;
+                case 42: Param_LightAngleV = ParamsFromButtonsChange(Param_LightAngleV, "Param_LightAngleV",DirectionS); break;
+                case 43: Param_LightDist0 = ParamsFromButtonsChange(Param_LightDist0, "Param_LightDist0",DirectionS); break;
+                case 44: Param_LightDist1 = ParamsFromButtonsChange(Param_LightDist1, "Param_LightDist1",DirectionS); break;
+                case 45: Param_LightDist2 = ParamsFromButtonsChange(Param_LightDist2, "Param_LightDist2",DirectionS); break;
+            }
+            if (Param__Number > 0)
+            {
+                ParamsFromControls(Param__Part, Param__Number);
+            }
+        }
+
+        let ParamsAutoRepaint = false;
+
+        let ParamsFromControlsCorrect = false;
+
+        function ParamsFromControls(Part, Param_N)
+        {
+            if (ParamsFromControlsCorrect)
+            {
+                return;
+            }
+        
+            Param__Number = Param_N;
+            Param__Part = Part;
+            let Param_BoundZMin_ = Param_BoundZMin;
+            let Param_BoundZMax_ = Param_BoundZMax;
+            switch (Part)
+            {
+                case 0:
+                    Param_ColorR = parseInt(document.getElementById("Param_Color").value.substr(1, 2), 16);
+                    Param_ColorG = parseInt(document.getElementById("Param_Color").value.substr(3, 2), 16);
+                    Param_ColorB = parseInt(document.getElementById("Param_Color").value.substr(5, 2), 16);
+                    Param_PlotSizeP = parseInt(document.getElementById("Param_PlotSizeP").value);
+                    Param_PlotSizeL = parseInt(document.getElementById("Param_PlotSizeL").value);
+                    Param_BoundZMin_ = parseInt(document.getElementById("Param_BoundZMin").value);
+                    Param_BoundZMax_ = parseInt(document.getElementById("Param_BoundZMax").value);
+                    if (Param_BoundZBoth)
+                    {
+                        if (Param_BoundZMin != Param_BoundZMin_)
+                        {
+                            Param_BoundZMax = Param_BoundZMax + (Param_BoundZMin_ - Param_BoundZMin);
+                            ParamsFromControlsCorrect = true;
+                            document.getElementById("Param_BoundZMax").value = Param_BoundZMax;
+                            ParamsFromControlsCorrect = false;
+                            Param_BoundZMin = Param_BoundZMin_;
+                            Param_BoundZMax_ = Param_BoundZMax;
+                        }
+                        if (Param_BoundZMax != Param_BoundZMax_)
+                        {
+                            Param_BoundZMin = Param_BoundZMin + (Param_BoundZMax_ - Param_BoundZMax);
+                            ParamsFromControlsCorrect = true;
+                            document.getElementById("Param_BoundZMin").value = Param_BoundZMin;
+                            ParamsFromControlsCorrect = false;
+                            Param_BoundZMax = Param_BoundZMax_;
+                            Param_BoundZMin_ = Param_BoundZMin;
+                        }
+                    }
+                    else
+                    {
+                        Param_BoundZMin = Param_BoundZMin_;
+                        Param_BoundZMax = Param_BoundZMax_;
+                    }
+                    Param_BoundZBoth = parseInt(document.getElementById("Param_BoundZBoth").checked ? 1 : 0);
+                    Param_PlotSurface = parseInt(document.getElementById("Param_PlotSurface").checked ? 1 : 0);
+                    Param_PlotText = parseInt(document.getElementById("Param_PlotText").checked ? 1 : 0);
+                    Param_InverseDraw = parseInt(document.getElementById("Param_InverseDraw").checked ? 1 : 0);
+                    ParamsApply(0, Param_ColorR, Param_ColorG, Param_ColorB, Param_PlotSizeP, Param_PlotSizeL, Param_PlotSurface, Param_PlotText, Param_InverseDraw, Param_BoundZMin, Param_BoundZMax);
+                    break;
+                case 1:
+                    Param_GrScaleXX = parseInt(document.getElementById("Param_GrScaleXX").value);
+                    Param_GrScaleXY = parseInt(document.getElementById("Param_GrScaleXY").value);
+                    Param_GrScaleXZ = parseInt(document.getElementById("Param_GrScaleXZ").value);
+                    Param_GrScaleYX = parseInt(document.getElementById("Param_GrScaleYX").value);
+                    Param_GrScaleYY = parseInt(document.getElementById("Param_GrScaleYY").value);
+                    Param_GrScaleYZ = parseInt(document.getElementById("Param_GrScaleYZ").value);
+                    Param_GrScaleZX = parseInt(document.getElementById("Param_GrScaleZX").value);
+                    Param_GrScaleZY = parseInt(document.getElementById("Param_GrScaleZY").value);
+                    Param_GrScaleZZ = parseInt(document.getElementById("Param_GrScaleZZ").value);
+                    ParamsApply(1, Param_GrScaleXX, Param_GrScaleXY, Param_GrScaleXZ, Param_GrScaleYX, Param_GrScaleYY, Param_GrScaleYZ, Param_GrScaleZX, Param_GrScaleZY, Param_GrScaleZZ, 0);
+                    break;
+                case 2:
+                    Param_GrScaleX = parseInt(document.getElementById("Param_GrScaleX").value);
+                    Param_GrScaleY = parseInt(document.getElementById("Param_GrScaleY").value);
+                    Param_GrScaleZ = parseInt(document.getElementById("Param_GrScaleZ").value);
+                    Param_GrOffset1X = parseInt(document.getElementById("Param_GrOffset1X").value);
+                    Param_GrOffset1Y = parseInt(document.getElementById("Param_GrOffset1Y").value);
+                    Param_GrOffset1Z = parseInt(document.getElementById("Param_GrOffset1Z").value);
+                    Param_GrOffset2X = parseInt(document.getElementById("Param_GrOffset2X").value);
+                    Param_GrOffset2Y = parseInt(document.getElementById("Param_GrOffset2Y").value);
+                    Param_GrOffset2Z = parseInt(document.getElementById("Param_GrOffset2Z").value);
+                    ParamsApply(2, Param_GrScaleX, Param_GrScaleY, Param_GrScaleZ, Param_GrOffset1X, Param_GrOffset1Y, Param_GrOffset1Z, Param_GrOffset2X, Param_GrOffset2Y, Param_GrOffset2Z, 0);
+                    break;
+                case 3:
+                    Param_Rot1Order = parseInt(document.getElementById("Param_Rot1Order").selectedIndex);
+                    Param_Rot1X = parseInt(document.getElementById("Param_Rot1X").value);
+                    Param_Rot1Y = parseInt(document.getElementById("Param_Rot1Y").value);
+                    Param_Rot1Z = parseInt(document.getElementById("Param_Rot1Z").value);
+                    Param_Rot2Order = parseInt(document.getElementById("Param_Rot2Order").selectedIndex);
+                    Param_Rot2X = parseInt(document.getElementById("Param_Rot2X").value);
+                    Param_Rot2Y = parseInt(document.getElementById("Param_Rot2Y").value);
+                    Param_Rot2Z = parseInt(document.getElementById("Param_Rot2Z").value);
+                    ParamsApply(3, Param_Rot1Order, Param_Rot1X, Param_Rot1Y, Param_Rot1Z, Param_Rot2Order, Param_Rot2X, Param_Rot2Y, Param_Rot2Z, 0, 0);
+                    break;
+                case 4:
+                    Param_LightMode = parseInt(document.getElementById("Param_LightMode").selectedIndex);
+                    Param_LightAngleH = parseInt(document.getElementById("Param_LightAngleH").value);
+                    Param_LightAngleV = parseInt(document.getElementById("Param_LightAngleV").value);
+                    Param_LightDist0 = parseInt(document.getElementById("Param_LightDist0").value);
+                    Param_LightDist1 = parseInt(document.getElementById("Param_LightDist1").value);
+                    Param_LightDist2 = parseInt(document.getElementById("Param_LightDist2").value);
+                    ParamsApply(4, Param_LightMode, Param_LightAngleH, Param_LightAngleV, Param_LightDist0, Param_LightDist1, Param_LightDist2, 0, 0, 0, 0);
+                    break;
+                case 99:
+                    Param_Decimation = parseInt(document.getElementById("Param_Decimation").value);
+                    Param_Buttons = parseInt(document.getElementById("Param_Buttons").value);
+                    if (Param_Buttons == 0)
+                    {
+                        document.getElementById("ScreenBtn1").style["display"] = "none";
+                        document.getElementById("ScreenBtn2").style["display"] = "none";
+                    }
+                    else
+                    {
+                        document.getElementById("ScreenBtn1").style["display"] = "inline-block";
+                        document.getElementById("ScreenBtn2").style["display"] = "inline-block";
+                        if (Param_Buttons > 0)
+                        {
+                            document.getElementById("ScreenBtn1").style["left"] = "0%";
+                            document.getElementById("ScreenBtn1").style["top"] = "0%";
+                            document.getElementById("ScreenBtn1").style["width"] = Param_Buttons + "%";
+                            document.getElementById("ScreenBtn1").style["height"] = "100%";
+
+                            document.getElementById("ScreenBtn2").style["left"] = (100 - Param_Buttons) + "%";
+                            document.getElementById("ScreenBtn2").style["top"] = "0%";
+                            document.getElementById("ScreenBtn2").style["width"] = Param_Buttons + "%";
+                            document.getElementById("ScreenBtn2").style["height"] = "100%";
+                        }
+                        else
+                        {
+                            document.getElementById("ScreenBtn1").style["left"] = "0%";
+                            document.getElementById("ScreenBtn1").style["top"] = "0%";
+                            document.getElementById("ScreenBtn1").style["width"] = "100%";
+                            document.getElementById("ScreenBtn1").style["height"] = (0 - Param_Buttons) + "%";
+
+                            document.getElementById("ScreenBtn2").style["left"] = "0%";
+                            document.getElementById("ScreenBtn2").style["top"] = (Param_Buttons + 100) + "%";
+                            document.getElementById("ScreenBtn2").style["width"] = "100%";
+                            document.getElementById("ScreenBtn2").style["height"] = (0 - Param_Buttons) + "%";
+                        }
+                    }
+                    WindowResize();
+                    Param_Step = parseInt(document.getElementById("Param_Step").value);
+                    document.getElementById("Param_BoundZMin").step = Param_Step;
+                    document.getElementById("Param_BoundZMax").step = Param_Step;
+                    document.getElementById("Param_GrScaleXX").step = Param_Step;
+                    document.getElementById("Param_GrScaleXY").step = Param_Step;
+                    document.getElementById("Param_GrScaleXZ").step = Param_Step;
+                    document.getElementById("Param_GrScaleYX").step = Param_Step;
+                    document.getElementById("Param_GrScaleYY").step = Param_Step;
+                    document.getElementById("Param_GrScaleYZ").step = Param_Step;
+                    document.getElementById("Param_GrScaleZX").step = Param_Step;
+                    document.getElementById("Param_GrScaleZY").step = Param_Step;
+                    document.getElementById("Param_GrScaleZZ").step = Param_Step;
+                    document.getElementById("Param_GrScaleX").step = Param_Step;
+                    document.getElementById("Param_GrScaleY").step = Param_Step;
+                    document.getElementById("Param_GrScaleZ").step = Param_Step;
+                    document.getElementById("Param_GrOffset1X").step = Param_Step;
+                    document.getElementById("Param_GrOffset1Y").step = Param_Step;
+                    document.getElementById("Param_GrOffset1Z").step = Param_Step;
+                    document.getElementById("Param_GrOffset2X").step = Param_Step;
+                    document.getElementById("Param_GrOffset2Y").step = Param_Step;
+                    document.getElementById("Param_GrOffset2Z").step = Param_Step;
+                    document.getElementById("Param_Rot1X").step = Param_Step;
+                    document.getElementById("Param_Rot1Y").step = Param_Step;
+                    document.getElementById("Param_Rot1Z").step = Param_Step;
+                    document.getElementById("Param_Rot2X").step = Param_Step;
+                    document.getElementById("Param_Rot2Y").step = Param_Step;
+                    document.getElementById("Param_Rot2Z").step = Param_Step;
+                    document.getElementById("Param_LightAngleH").step = Param_Step;
+                    document.getElementById("Param_LightAngleV").step = Param_Step;
+                    document.getElementById("Param_LightDist0").step = Param_Step;
+                    document.getElementById("Param_LightDist1").step = Param_Step;
+                    document.getElementById("Param_LightDist2").step = Param_Step;
+                    break;
+            }
+            
+            if (ParamsAutoRepaint)
+            {
+                //Repaint();
+            }
+        }
+
+        ParamsToControls();
+
+        let CanvasW = 1;
+        let CanvasH = 1;
+        let ScreenObj = document.getElementById("graphscreen");
+        let ScreenCtx;
+        let ScreenData;
+        let GuiN = -1;
+        let GuiIdx = -1;
+        
+        let GraphSettingsObj = document.getElementById("GraphSettings");
+        let GraphSettings1Obj = document.getElementById("GraphSettings1");
+        let GraphSettings2Obj = document.getElementById("GraphSettings2");
+        let GraphSettings3Obj = document.getElementById("GraphSettings3");
+        
+        function SettingsShow()
+        {
+            ParentAlive();
+            GraphSettingsObj.style["display"] = "block";
+        }
+
+        function SettingsHide()
+        {
+            ParentAlive();
+            GraphSettingsObj.style["display"] = "none";
+        }
+        
+        function SettingsPage(P)
+        {
+            ParentAlive();
+            GraphSettings1Obj.style["display"] = "none";
+            GraphSettings2Obj.style["display"] = "none";
+            GraphSettings3Obj.style["display"] = "none";
+            switch (P)
+            {
+                case 1: GraphSettings1Obj.style["display"] = "block"; break;
+                case 2: GraphSettings2Obj.style["display"] = "block"; break;
+                case 3: GraphSettings3Obj.style["display"] = "block"; break;
+            }
+        }
+        
+        function SetLayout(BtnHeight)
+        {
+            document.getElementById("ParamTabClose1").style["height"] = BtnHeight + "px";
+            document.getElementById("ParamTab1").style["height"] = BtnHeight + "px";
+            document.getElementById("ParamTab2").style["height"] = BtnHeight + "px";
+            document.getElementById("ParamTab3").style["height"] = BtnHeight + "px";
+            document.getElementById("ParamTabClose2").style["height"] = BtnHeight + "px";
+
+            document.getElementById("Param_Clear").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_Color").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_PlotSizeP").style["height"] = BtnHeight + "px";;
+            document.getElementById("Param_PlotSizeL").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_BoundZMin").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_BoundZMax").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_BoundZBoth").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_PlotSurface").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_PlotText").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_InverseDraw").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_Step").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_Decimation").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_Buttons").style["height"] = BtnHeight + "px";
+
+            document.getElementById("Param_GrScaleXX").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_GrScaleXY").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_GrScaleXZ").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_GrScaleYX").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_GrScaleYY").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_GrScaleYZ").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_GrScaleZX").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_GrScaleZY").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_GrScaleZZ").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_GrScaleX").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_GrScaleY").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_GrScaleZ").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_GrOffset1X").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_GrOffset1Y").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_GrOffset1Z").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_GrOffset2X").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_GrOffset2Y").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_GrOffset2Z").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_Rot1Order").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_Rot1X").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_Rot1Y").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_Rot1Z").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_Rot2Order").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_Rot2X").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_Rot2Y").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_Rot2Z").style["height"] = BtnHeight + "px";
+
+            document.getElementById("Param_LightMode").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_LightAngleH").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_LightAngleV").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_LightDist0").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_LightDist1").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_LightDist2").style["height"] = BtnHeight + "px";
+        }
+        
+        function CanvasWH()
+        {
+            return [CanvasW, CanvasH];
+        }
+
+        function WindowResize()
+        {
+            let CanvasW_disp = Math.ceil(window.innerWidth);
+            let CanvasH_disp = Math.ceil(window.innerHeight);
+            let CanvasW__ = Math.ceil(CanvasW_disp * window.devicePixelRatio / Param_Decimation);
+            let CanvasH__ = Math.ceil(CanvasH_disp * window.devicePixelRatio / Param_Decimation);
+            if ((CanvasW != CanvasW__) || (CanvasH != CanvasH__))
+            {
+                CanvasW = CanvasW__;
+                CanvasH = CanvasH__;
+                ScreenObj.width = CanvasW;
+                ScreenObj.height = CanvasH;
+                ScreenCtx = ScreenObj.getContext("2d", { willReadFrequently: true });
+                ScreenData = ScreenCtx.getImageData(0, 0, CanvasW, CanvasH);
+                ScreenObj.style["width"] = CanvasW_disp + "px";
+                ScreenObj.style["height"] = CanvasH_disp + "px";
+            }
+        }
+
+        function RepaintResult(Idx, Raw, RawL)
+        {
+            for (let I = 0; I < RawL; I++)
+            {
+                let Code0 = Raw.charCodeAt((I << 1) + 0) - 65;
+                let Code1 = Raw.charCodeAt((I << 1) + 1) - 65;
+                ScreenData.data[Idx + I] = (Code0 << 4) + Code1;
+            }
+        }
+
+        function RepaintResultFinish()
+        {
+            ScreenCtx.putImageData(ScreenData, 0, 0);
+        }
+
+        function ParamsApply(N, P0, P1, P2, P3, P4, P5, P6, P7, P8, P9)
+        {
+            if (ParentAlive())
+            {
+                opener.GuiGraphSetParams(GuiN, GuiIdx, N, P0, P1, P2, P3, P4, P5, P6, P7, P8, P9);
+                return;
+            }
+        }
+
+        function Repaint()
+        {
+            if (ParentAlive())
+            {
+                opener.GuiGraphRepaint(GuiIdx, GuiN, CanvasW, CanvasH);
+            }
+        }
+
+        function GraphClear()
+        {
+            if (ParentAlive())
+            {
+                opener.GuiGraphClear(GuiIdx, GuiN, CanvasW, CanvasH);
+            }
+        }
+
+        function SyncId(Id, N, Idx)
+        {
+            IdParent = Id;
+            GuiN = N;
+            GuiIdx = Idx;
+            document.title = "ScriptSDCC - Graph " + N;
+            
+            WindowResize();
+            ParamsFromControls(0, 0);
+            ParamsFromControls(1, 0);
+            ParamsFromControls(2, 0);
+            ParamsFromControls(3, 0);
+            ParamsFromControls(4, 0);
+            ParamsFromControls(98, 0);
+            ParamsFromControls(99, 0);
+            ParamsAutoRepaint = true;
+            return IdThis;
+        }
+
+        function GetId()
+        {
+            return IdThis;
+        }
+
+        function ParentAlive()
+        {
+            if (opener)
+            {
+                if ((opener.GuiGetId) && (!opener.closed))
+                {
+                    if (opener.GuiGetId() == IdParent)
+                    {
+                        return true;
+                    }
+                }
+            }
+            window.close();
+            return false;
+        }
+
+        window.addEventListener("resize", WindowResize, false);
+
+        
+
+
+    </script>
+  </body>
+</html>
