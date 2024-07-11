@@ -299,10 +299,9 @@ function GuiGraphRepaintAll()
     {
         return;
     }
-    GuiGraphRepaintLast = performance.now();
-    
     for (let I = 0; I < GuiOpenedWindows.length; I++)
     {
+        GuiGraphRepaintLast = performance.now();
         if (GuiCheckAlive(I, 2))
         {
             const CanvasWH = GuiOpenedWindows[I][2].CanvasWH();
@@ -313,6 +312,7 @@ function GuiGraphRepaintAll()
             _ProgMemoMap(GuiOpenedWindows[I][1], 8, 0);
         }
     }
+    GuiGraphRepaintLast = performance.now();
 }
 
 
