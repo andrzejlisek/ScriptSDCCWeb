@@ -643,7 +643,10 @@
                 ScreenObj.style["width"] = CanvasW_disp + "px";
                 ScreenObj.style["height"] = CanvasH_disp + "px";
             }
-            Repaint();
+            if (ParamsAutoRepaint)
+            {
+                Repaint();
+            }
         }
 
         function RepaintResult(Idx, Raw, RawL)
