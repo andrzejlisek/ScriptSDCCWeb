@@ -21,15 +21,9 @@ Gui::~Gui()
     delete GuiFont_;
 }
 
-void Gui::SetParams(std::string CellW_, std::string CellH_, std::string FontSize_)
+void Gui::SetParams(std::string CellW_, std::string CellH_)
 {
-    FontSizeW = std::stoi(FontSize_);
-    FontSizeH = std::stoi(FontSize_);
-    GuiFont_->SetFontSize(std::stoi(CellW_), std::stoi(CellH_), FontSizeW, FontSizeH);
-    for (int I = 0; I < 256; I++)
-    {
-        GuiGraph_[I]->SetFontCellSize(GuiFont_->CellW, GuiFont_->CellH);
-    }
+    GuiFont_->SetFontSize(std::stoi(CellW_), std::stoi(CellH_));
 }
 
 std::string Gui::Swap(std::string Raw)

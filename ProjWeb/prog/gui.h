@@ -16,9 +16,7 @@ public:
     Gui();
     ~Gui();
 
-    int FontSizeW = 1;
-    int FontSizeH = 1;
-    void SetParams(std::string CellW_, std::string CellH_, std::string FontSize_);
+    void SetParams(std::string CellW_, std::string CellH_);
     GuiFont * GuiFont_;
 
     GuiWidgets GuiWidgets_[256];

@@ -10,21 +10,19 @@ GuiFont::~GuiFont()
 
 }
 
-void GuiFont::SetFontSize(int CellW__, int CellH__, int FontSizeW_, int FontSizeH_)
+void GuiFont::SetFontSize(int CellW__, int CellH__)
 {
-    FontSizeW = FontSizeW_;
-    FontSizeH = FontSizeH_;
     CellW_ = CellW__;
     CellH_ = CellH__;
-    CellW = CellW__ * FontSizeW_;
-    CellH = CellH__ * FontSizeH_;
-    CellWH = CellW * CellH;
-    Glyphs.clear();
+    /*CellW = CellW__ * FontSize;
+    CellH = CellH__ * FontSize;
+    CellWH = CellW * CellH;*/
 }
 
-char * GuiFont::GetGlyph(int Chr)
+char * GuiFont::GetGlyph(int Chr, int FontSize)
 {
-    if (Glyphs.find(Chr) == Glyphs.end())
+    int ChrIdx = Chr + (FontSize << 20);
+    if (Glyphs.find(ChrIdx) == Glyphs.end())
     {
         std::string GlyphJS = GetGlyphJS(Chr);
         std::vector<char> GlyphRaw;
@@ -32,11 +30,11 @@ char * GuiFont::GetGlyph(int Chr)
         {
             for (int Y = 0; Y < CellH_; Y++)
             {
-                for (int YY = 0; YY < FontSizeH; YY++)
+                for (int YY = 0; YY < FontSize; YY++)
                 {
                     for (int X = 0; X < CellW_; X++)
                     {
-                        for (int XX = 0; XX < FontSizeW; XX++)
+                        for (int XX = 0; XX < FontSize; XX++)
                         {
                             GlyphRaw.push_back(GlyphJS[Y * CellW_ + X] - 48);
                         }
@@ -44,12 +42,12 @@ char * GuiFont::GetGlyph(int Chr)
                 }
             }
         }
-        Glyphs[Chr] = GlyphRaw;
+        Glyphs[ChrIdx] = GlyphRaw;
     }
 
-    if (Glyphs[Chr].size() > 0)
+    if (Glyphs[ChrIdx].size() > 0)
     {
-        return Glyphs[Chr].data();
+        return Glyphs[ChrIdx].data();
     }
     else
     {

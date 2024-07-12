@@ -28,6 +28,7 @@ public:
     int Param_InverseDraw = false;
     int Param_BoundZMin = -1000;
     int Param_BoundZMax = 1000;
+    int Param_FontSize = 1;
 
     int Param_GrScaleXX = 1000;
     int Param_GrScaleXY = 0;
@@ -159,6 +160,7 @@ public:
     int PlotSizeDiagonal1, PlotSizeDiagonal2, PlotSizeDiagonal3, PlotSizeDiagonal4;
     int BoundZMin = -1000;
     int BoundZMax = 1000;
+    int FontSize = 1;
 
     int LightMode = 0;
     int LightAngleH = 0;

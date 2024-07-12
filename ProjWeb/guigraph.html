@@ -106,7 +106,8 @@
                 <tr><td>Text</td><td><input class="ctrl" id="Param_PlotText" onchange="ParamsFromControls(0, 0)" type="checkbox"></td></tr>
                 <tr><td>Inverse</td><td><input class="ctrl" id="Param_InverseDraw" onchange="ParamsFromControls(0, 0)" type="checkbox"></td></tr>
                 <tr><td>Step</td><td><input class="ctrl" id="Param_Step" onchange="ParamsFromControls(99, 0)" type="number" min="1" max="1000000" value="10"></td></tr>
-                <tr><td>Zoom</td><td><input class="ctrl" id="Param_Decimation" onchange="ParamsFromControls(99, 3)" type="number" min="1" max="20" value="1"></td></tr>
+                <tr><td>Pixel size</td><td><input class="ctrl" id="Param_Decimation" onchange="ParamsFromControls(99, 3)" type="number" min="1" max="20" value="1"></td></tr>
+                <tr><td>Font size</td><td><input class="ctrl" id="Param_FontSize" onchange="ParamsFromControls(4, 46)" type="number" min="1" max="15" value="1"></td></tr>
                 <tr><td>Buttons</td><td><input class="ctrl" id="Param_Buttons" onchange="ParamsFromControls(99, 0)" type="number" min="-50" max="50" value="0"></td></tr>
             </table>
         </div>
@@ -179,6 +180,7 @@
         let Param_InverseDraw = 0;
         let Param_Step = 10;
         let Param_Decimation = 1;
+        let Param_FontSize = 1;
         let Param_Buttons = 0;
 
         let Param_GrScaleXX = 1000;
@@ -232,6 +234,7 @@
             document.getElementById("Param_InverseDraw").checked = (Param_InverseDraw);
             document.getElementById("Param_Step").value = Param_Step;
             document.getElementById("Param_Decimation").value = Param_Decimation;
+            document.getElementById("Param_FontSize").value = Param_FontSize;
 
             document.getElementById("Param_GrScaleXX").value = Param_GrScaleXX;
             document.getElementById("Param_GrScaleXY").value = Param_GrScaleXY;
@@ -315,6 +318,7 @@
                 case 43: Param_LightDist0 = ParamsFromButtonsChange(Param_LightDist0, "Param_LightDist0",DirectionS); break;
                 case 44: Param_LightDist1 = ParamsFromButtonsChange(Param_LightDist1, "Param_LightDist1",DirectionS); break;
                 case 45: Param_LightDist2 = ParamsFromButtonsChange(Param_LightDist2, "Param_LightDist2",DirectionS); break;
+                case 46: Param_FontSize = ParamsFromButtonsChange(Param_FontSize, "Param_FontSize", Direction); break;
             }
             if (Param__Number > 0)
             {
@@ -421,7 +425,8 @@
                     Param_LightDist0 = parseInt(document.getElementById("Param_LightDist0").value);
                     Param_LightDist1 = parseInt(document.getElementById("Param_LightDist1").value);
                     Param_LightDist2 = parseInt(document.getElementById("Param_LightDist2").value);
-                    ParamsApply(4, Param_LightMode, Param_LightAngleH, Param_LightAngleV, Param_LightDist0, Param_LightDist1, Param_LightDist2, 0, 0, 0, 0);
+                    Param_FontSize = parseInt(document.getElementById("Param_FontSize").value);
+                    ParamsApply(4, Param_LightMode, Param_LightAngleH, Param_LightAngleV, Param_LightDist0, Param_LightDist1, Param_LightDist2, Param_FontSize, 0, 0, 0);
                     break;
                 case 99:
                     Param_Decimation = parseInt(document.getElementById("Param_Decimation").value);
@@ -543,8 +548,12 @@
             }
         }
         
-        function SetLayout(BtnHeight)
+        function SetLayout(BtnHeight, Param_Decimation_, Param_FontSize_)
         {
+            Param_Decimation = Param_Decimation_;
+            Param_FontSize = Param_FontSize_;
+            ParamsToControls();
+
             document.getElementById("ParamTabClose1").style["height"] = BtnHeight + "px";
             document.getElementById("ParamTab1").style["height"] = BtnHeight + "px";
             document.getElementById("ParamTab2").style["height"] = BtnHeight + "px";
@@ -563,6 +572,7 @@
             document.getElementById("Param_InverseDraw").style["height"] = BtnHeight + "px";
             document.getElementById("Param_Step").style["height"] = BtnHeight + "px";
             document.getElementById("Param_Decimation").style["height"] = BtnHeight + "px";
+            document.getElementById("Param_FontSize").style["height"] = BtnHeight + "px";
             document.getElementById("Param_Buttons").style["height"] = BtnHeight + "px";
 
             document.getElementById("Param_GrScaleXX").style["height"] = BtnHeight + "px";
@@ -598,6 +608,17 @@
             document.getElementById("Param_LightDist0").style["height"] = BtnHeight + "px";
             document.getElementById("Param_LightDist1").style["height"] = BtnHeight + "px";
             document.getElementById("Param_LightDist2").style["height"] = BtnHeight + "px";
+
+            WindowResize();
+            ParamsFromControls(0, 0);
+            ParamsFromControls(1, 0);
+            ParamsFromControls(2, 0);
+            ParamsFromControls(3, 0);
+            ParamsFromControls(4, 0);
+            ParamsFromControls(98, 0);
+            ParamsFromControls(99, 0);
+            ParamsAutoRepaint = true;
+            Repaint();
         }
         
         function CanvasWH()
@@ -654,7 +675,6 @@
             if (ParentAlive())
             {
                 opener.GuiGraphRepaintAllTimer();
-                //opener.GuiGraphRepaint(GuiIdx, GuiN, CanvasW, CanvasH);
             }
         }
 
@@ -672,16 +692,6 @@
             GuiN = N;
             GuiIdx = Idx;
             document.title = "ScriptSDCC - Graph " + N;
-            
-            WindowResize();
-            ParamsFromControls(0, 0);
-            ParamsFromControls(1, 0);
-            ParamsFromControls(2, 0);
-            ParamsFromControls(3, 0);
-            ParamsFromControls(4, 0);
-            ParamsFromControls(98, 0);
-            ParamsFromControls(99, 0);
-            ParamsAutoRepaint = true;
             return IdThis;
         }
 

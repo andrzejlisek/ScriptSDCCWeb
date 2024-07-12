@@ -42,6 +42,7 @@ void GuiGraphInstance::RefreshParams()
     RefreshParVal1(PlotSurface, Param_PlotSurface);
     RefreshParVal1(PlotText, Param_PlotText);
     RefreshParVal1(InverseDraw, Param_InverseDraw);
+    RefreshParVal1(FontSize, Param_FontSize);
 
     RefreshParVal1(PlotSizeP_, Param_PlotSizeP);
     RefreshParVal1(PlotSizeL_, Param_PlotSizeL);

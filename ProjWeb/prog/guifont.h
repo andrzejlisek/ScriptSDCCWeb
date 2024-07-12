@@ -11,19 +11,19 @@ class GuiFont
 {
 public:
     std::string (*GetGlyphJS)( int );
-    char * GetGlyph(int Chr);
+    char * GetGlyph(int Chr, int FontSize);
     int CellW_ = 0;
     int CellH_ = 0;
-    int CellW = 0;
-    int CellH = 0;
-    int CellWH = 0;
+    //int CellW = 0;
+    //int CellH = 0;
+    //int CellWH = 0;
 
-    void SetFontSize(int CellW__, int CellH__, int FontSizeW_, int FontSizeH_);
+    void SetFontSize(int CellW__, int CellH__);
     GuiFont();
     ~GuiFont();
 private:
-    int FontSizeW = 1;
-    int FontSizeH = 1;
+    //int FontSizeW = 1;
+    //int FontSizeH = 1;
     std::map<int, std::vector<char>> Glyphs;
 };
 

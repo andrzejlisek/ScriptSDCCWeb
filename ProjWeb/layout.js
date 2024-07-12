@@ -24,6 +24,7 @@ function LayoutLoadConf()
     document.getElementById("LayoutConfInstrQuan").value = LayoutConfInstrQuan / 1000;
     document.getElementById("LayoutConfGraphPeriod").value = DataGetIDefault(StoragePrefix + "LayoutConfGraphPeriod", 500);
     document.getElementById("LayoutConfWidgetFontSize").value = DataGetIDefault(StoragePrefix + "LayoutConfWidgetFontSize", 12);
+    document.getElementById("LayoutConfGraphPixelSize").value = DataGetIDefault(StoragePrefix + "LayoutConfGraphPixelSize", 1);
     document.getElementById("LayoutConfGraphFontSize").value = DataGetIDefault(StoragePrefix + "LayoutConfGraphFontSize", 1);
 }
 
@@ -35,11 +36,13 @@ function LayoutSaveConf()
     DataSet(StoragePrefix + "LayoutConfInstrQuan", parseInt(document.getElementById("LayoutConfInstrQuan").value) * 1000);
     DataSet(StoragePrefix + "LayoutConfGraphPeriod", document.getElementById("LayoutConfGraphPeriod").value);
     DataSet(StoragePrefix + "LayoutConfWidgetFontSize", document.getElementById("LayoutConfWidgetFontSize").value);
+    DataSet(StoragePrefix + "LayoutConfGraphPixelSize", document.getElementById("LayoutConfGraphPixelSize").value);
     DataSet(StoragePrefix + "LayoutConfGraphFontSize", document.getElementById("LayoutConfGraphFontSize").value);
     
     LayoutConfInstrQuan = parseInt(document.getElementById("LayoutConfInstrQuan").value) * 1000;
     GuiGraphRepaintPeriod = parseInt(document.getElementById("LayoutConfGraphPeriod").value);
     LayoutConfWidgetFontSize = parseInt(document.getElementById("LayoutConfWidgetFontSize").value);
+    LayoutConfGraphPixelSize = parseInt(document.getElementById("LayoutConfGraphPixelSize").value);
     LayoutConfGraphFontSize = parseInt(document.getElementById("LayoutConfGraphFontSize").value);
     LayoutButtonHeight = parseInt(document.getElementById("LayoutConfBtnHeight").value);
     ProgGuiSetParamsX();
@@ -303,6 +306,7 @@ function LayoutInit()
     document.getElementById("LayoutConfInstrQuan").style["height"] = LayoutButtonHeight + "px";
     document.getElementById("LayoutConfGraphPeriod").style["height"] = LayoutButtonHeight + "px";
     document.getElementById("LayoutConfWidgetFontSize").style["height"] = LayoutButtonHeight + "px";
+    document.getElementById("LayoutConfGraphPixelSize").style["height"] = LayoutButtonHeight + "px";
     document.getElementById("LayoutConfGraphFontSize").style["height"] = LayoutButtonHeight + "px";
 
     LayoutStatusInfoRefresh();

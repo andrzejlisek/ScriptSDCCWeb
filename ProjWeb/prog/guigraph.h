@@ -58,8 +58,6 @@ public:
         std::vector<int> TextUtf;
         int TextLenRaw = 0;
         int TextLenUtf = 0;
-        int TextX = 0;
-        int TextY = 0;
         int TextX_ = 0;
         int TextY_ = 0;
 
@@ -72,11 +70,6 @@ public:
     std::vector<PlotDef> GraphDef;
 
 private:
-    int TextFontW = 8;
-    int TextFontH = 16;
-
-
-
     uchar TextColorR = 255;
     uchar TextColorG = 255;
     uchar TextColorB = 255;

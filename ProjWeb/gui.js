@@ -66,7 +66,7 @@ function GuiWindowSync(Idx)
                     }
                     if (GuiOpenedWindows[Idx][0] == 2)
                     {
-                        GuiOpenedWindows[Idx][2].SetLayout(LayoutButtonHeight);
+                        GuiOpenedWindows[Idx][2].SetLayout(LayoutButtonHeight, LayoutConfGraphPixelSize, LayoutConfGraphFontSize);
                     }
                     if (GuiOpenedWindows[Idx][0] == 3)
                     {

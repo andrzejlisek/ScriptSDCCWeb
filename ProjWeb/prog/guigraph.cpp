@@ -415,8 +415,6 @@ std::string GuiGraph::TextString(int GraphNum, std::string Str)
 
     PD.TextX_ = (Text_X0 - PD.TextLenUtf);
     PD.TextY_ = (Text_Y0 - 1);
-    PD.TextX = PD.TextX_ * TextFontW / 2;
-    PD.TextY = PD.TextY_ * TextFontH / 2;
     GraphDef.push_back(PD);
     return "";
 }
@@ -435,15 +433,4 @@ std::string GuiGraph::TextMove(int GraphNum, int OffsetX, int OffsetY, int Mode)
             break;
     }
     return "";
-}
-
-void GuiGraph::SetFontCellSize(int TextFontW_, int TextFontH_)
-{
-    TextFontW = TextFontW_;
-    TextFontH = TextFontH_;
-    for (int I = 0; I < GraphDef.size(); I++)
-    {
-        GraphDef[I].TextX = GraphDef[I].TextX_ * TextFontW / 2;
-        GraphDef[I].TextY = GraphDef[I].TextY_ * TextFontH / 2;
-    }
 }

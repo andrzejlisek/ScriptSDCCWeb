@@ -158,8 +158,13 @@ This tabs contains the following fields:
 * **Depth both** \- Change both min/max values simutnaneously, when you change the ***Depth min*** or ***Depth max*** values\.
 * **Text** \- Display text labels\.
 * **Inverse** \- Invert the painting order for the same depth of several points\. This option may change artifacts, but may cause some artifacts while drawing lines and triangles while lighting is enabled\. This new artifacts will be suppressed by repainting \(resize window, change any drawing parameter including **Inverse**\)\.
-* **Step** \- The value change step used when changing value of fields described as italic, in exception of ***Point size*** and ***Line size***\.
-* **Zoom** \- The pixel zoom image\. Use for small pictures on big screens\.
+* **Step** \- The value change step used when changing value of fields described as italic\. The step is not applied into these parameters:
+  * ***Point size***\.
+  * ***Line size***\.
+  * ***Pixel size***\.
+  * ***Font size***\.
+* ***Pixel size*** \- The pixel size of the image\. Use for small pictures in high resolution screens or fon increase drawing performance\.
+* ***Font size*** \- The font size in the image\. Use for more text visibility in high resolution screens\.
 * **Buttons** \- The button displayed on the edges for change any of value of field described in italic\. For change any field by buttos, change manually value of these field, then close the settings and click the buttons\. The value is the percentage of display size and can be following:
   * **Positive value** \- Buttons at the left and right edge\.
   * **Zero** \- No buttons\.
@@ -230,7 +235,8 @@ This has the following parameters:
   * **Too high value** \- The engine responsivity during the running becomes longer\.
 * **Graph repaint period in ms** \- The time in milliseconds between repainting open graph canvases and memory maps\.
 * **Widget font size** \- Font size used in widgets\.
-* **Graph font size** \- Font size used in graphs\.
+* **Graph pixel size** \- Initial pixel size used in graphs\.
+* **Graph font size** \- Initial font size used in graphs\.
 
 # Preparing the script
 

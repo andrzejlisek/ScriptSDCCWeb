@@ -251,11 +251,9 @@ extern "C"
     {
         std::string strW = "";
         std::string strH = "";
-        std::string strF = "";
         strW.append(emscripten_run_script_string("FontGetParam(1);"));
         strH.append(emscripten_run_script_string("FontGetParam(2);"));
-        strF.append(emscripten_run_script_string("FontGetParam(3);"));
-        Gui_.SetParams(strW, strH, strF);
+        Gui_.SetParams(strW, strH);
     }
 
     EMSCRIPTEN_KEEPALIVE

@@ -13,6 +13,7 @@ let DebugMode = false;
 let GuiGraphRepaintPeriod = DataGetIDefault(StoragePrefix + "LayoutConfGraphPeriod", 500);
 
 let LayoutConfWidgetFontSize = DataGetIDefault(StoragePrefix + "LayoutConfWidgetFontSize", 12);
+let LayoutConfGraphPixelSize = DataGetIDefault(StoragePrefix + "LayoutConfGraphPixelSize", 1);
 let LayoutConfGraphFontSize = DataGetIDefault(StoragePrefix + "LayoutConfGraphFontSize", 1);
 
 let ProgLoaded = false;

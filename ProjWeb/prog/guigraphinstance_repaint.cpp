@@ -55,6 +55,7 @@ void GuiGraphInstance::SetParams(int ParamN, int P0, int P1, int P2, int P3, int
             Param_LightDist0 = P3;
             Param_LightDist1 = P4;
             Param_LightDist2 = P5;
+            Param_FontSize = P6;
             break;
     }
 }
@@ -146,6 +147,8 @@ std::string GuiGraphInstance::RepaintScreen(int GraphNum, int GraphIdx, int ScrW
     if (true)
     {
         int L = GuiGraph_->GraphDef.size();
+        int FontWFactor = (GuiFont_->CellW_ * FontSize) >> 1;
+        int FontHFactor = (GuiFont_->CellH_ * FontSize) >> 1;
 
         for (int I = RefreshItemCounter; I < L; I++)
         {
@@ -163,23 +166,23 @@ std::string GuiGraphInstance::RepaintScreen(int GraphNum, int GraphIdx, int ScrW
                 case GuiGraph::PlotTypeDef::None:
                     break;
                 case GuiGraph::PlotTypeDef::Text:
-                    if (PlotText)
+                    if (PlotText && (FontSize > 0))
                     {
                         std::vector<int> Text = GuiGraph_->GraphDef[I].TextUtf;
                         int TextLen = GuiGraph_->GraphDef[I].TextLenUtf;
                         int III = 0;
-                        int FontW = GuiFont_->CellW;
-                        int FontH = GuiFont_->CellH;
+                        int FontW = GuiFont_->CellW_ * FontSize;
+                        int FontH = GuiFont_->CellH_ * FontSize;
                         bool TextB = GuiGraph_->GraphDef[I].TextB;
                         bool TextF = GuiGraph_->GraphDef[I].TextF;
                         for (int II = 0; II < TextLen; II++)
                         {
-                            char * Glyph = GuiFont_->GetGlyph(Text[II]);
+                            char * Glyph = GuiFont_->GetGlyph(Text[II], FontSize);
                             if (Glyph != NULL)
                             {
                                 int P = 0;
-                                int DrawXX = DrawX + III + GuiGraph_->GraphDef[I].TextX;
-                                int DrawYY = DrawY - GuiGraph_->GraphDef[I].TextY;
+                                int DrawXX = DrawX + III + (GuiGraph_->GraphDef[I].TextX_ * FontWFactor);
+                                int DrawYY = DrawY - (GuiGraph_->GraphDef[I].TextY_ * FontHFactor);
                                 for (int YY = 0; YY < FontH; YY++)
                                 {
                                     for (int XX = 0; XX < FontW; XX++)
