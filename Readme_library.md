@@ -258,14 +258,34 @@ Every engine has own instance of pseudo\-random number generator initialized by 
 
 The local memory has shorter access time than the shared memory, but the shared memory is needed if you want to access to the same memory from several engines\.
 
-By default, memory space from 0 to 127 are the local, and the spaced from 128 to 255 are the shared\.
+By default, memory space from 0 to 127 are the local, and the spaced from 128 to 255 are the shared\. The position can be positive and negative index, inside the range of signed 32\-bit integer\.
+
+The memory can work in one of two structures\. The structure does not affects to memory usage in the script, but may affect the read/write performancie and computer memory occupation\. The only difference between structures are interiors in script engine, nothing else\. Switching between structures without clearing data is not possible\. There structures as two:
+
+
+* **Dense** \- The default structure type, recommended in most cases\. The usage position range is recommended to be near to zero\. For instance, assume, that there is need to store numbers at the 100 positions:
+  * Recommended position ranges, use of the ranges will allocate necessary amount of memory, or slightly higher than necessary:
+    * 0\.\.99
+    * 1\.\.100
+    * \-50\.\.49
+    * \-100\.\.\-1
+  * Not recommended position ranges, use of the ranges will allocate much high amount of memory than necessary:
+    * 1001\.\.1100
+    * \-2099\.\.\-2000
+* **Sparse** \- The structure is recommendedn, where the difference between minimum and maximum used position is very high related to number of used position\. For instance:
+  * The memory contains only 100 numbers other than **0** at several positions\.
+  * The lowest used position is **\-10000**\.
+  * The highest used position is **10000**\.
+
+You can the set the memory structure by **memo\_clear\_dense **and **memo\_clear\_sparse** function\. Replacing one of them into other in the script will not imply the other modifications of the script code\.
 
 For manage the arraries, the **memo\.h** contains the following functions:
 
 
 * **void memo\_local\_shared\(uchar N\)** \- Set the number threshold of local and shared memories, the number up to **N** will access to shared memory, the number above **N** will access to local memory\.
 * **void memo\_shared\_local\(uchar N\)** \- Set the number threshold of shared and local memories, the number up to **N** will access to local memory, the number above **N** will access to shared memory\.
-* **void memo\_clear\(uchar N\)** \- Clear the memory\.
+* **void memo\_clear\_dense\(uchar N\)** \- Clear the memory and set it as dense structure\.
+* **void memo\_clear\_sparse\(uchar N\)** \- Clear the memory and set it as sparse structure\.
 * **\# memo\_get\_schar\(uchar N, slong Pos\)** \- Read the value at the specified position\. If the value is not written, the function will return **0**\.
 * **void memo\_set\_schar\(uchar N, slong Pos, \# Val\)** \- Write the value at the specified position\.
 

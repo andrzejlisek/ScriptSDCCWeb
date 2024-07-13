@@ -454,8 +454,16 @@ void ScriptShared::MemoSwapOperation()
             MemoTypeX = false;
             break;
         case 2:
-            MemoDataP[N].clear();
-            MemoDataN[N].clear();
+            MemoData[N].DenseP.clear();
+            MemoData[N].DenseN.clear();
+            MemoData[N].Sparse.clear();
+            MemoData[N].IsDense = true;
+            break;
+        case 3:
+            MemoData[N].DenseP.clear();
+            MemoData[N].DenseN.clear();
+            MemoData[N].Sparse.clear();
+            MemoData[N].IsDense = false;
             break;
     }
 }
@@ -488,23 +496,37 @@ bool ScriptShared::MemoIsShared()
 
 ubyte1 ScriptShared::MemoGet1(uchar N, arrayidx Idx)
 {
-    if (Idx >= 0)
+    if (MemoData[N].IsDense)
     {
-        if (MemoDataP[N].size() > Idx)
+        if (Idx >= 0)
         {
-            return MemoDataP[N][Idx];
+            if (MemoData[N].DenseP.size() > Idx)
+            {
+                return MemoData[N].DenseP[Idx];
+            }
+            else
+            {
+                return 0;
+            }
         }
         else
         {
-            return 0;
+            Idx = 0 - Idx;
+            if (MemoData[N].DenseN.size() > Idx)
+            {
+                return MemoData[N].DenseN[Idx];
+            }
+            else
+            {
+                return 0;
+            }
         }
     }
     else
     {
-        Idx = 0 - Idx;
-        if (MemoDataN[N].size() > Idx)
+        if (MemoData[N].Sparse.count(Idx))
         {
-            return MemoDataN[N][Idx];
+            return MemoData[N].Sparse[Idx];
         }
         else
         {
@@ -515,27 +537,44 @@ ubyte1 ScriptShared::MemoGet1(uchar N, arrayidx Idx)
 
 ubyte2 ScriptShared::MemoGet2(uchar N, arrayidx Idx)
 {
-    if (Idx >= 0)
+    if (MemoData[N].IsDense)
     {
-        Idx = Idx << 1;
-        if (MemoDataP[N].size() > (Idx + 1))
+        if (Idx >= 0)
         {
-            ByteData.Raw[0] = MemoDataP[N][Idx + 0];
-            ByteData.Raw[1] = MemoDataP[N][Idx + 1];
-            return ByteData.U2;
+            Idx = Idx << 1;
+            if (MemoData[N].DenseP.size() > (Idx + 1))
+            {
+                ByteData.Raw[0] = MemoData[N].DenseP[Idx + 0];
+                ByteData.Raw[1] = MemoData[N].DenseP[Idx + 1];
+                return ByteData.U2;
+            }
+            else
+            {
+                return 0;
+            }
         }
         else
         {
-            return 0;
+            Idx = (0 - Idx) << 1;
+            if (MemoData[N].DenseN.size() > (Idx + 1))
+            {
+                ByteData.Raw[0] = MemoData[N].DenseN[Idx + 0];
+                ByteData.Raw[1] = MemoData[N].DenseN[Idx + 1];
+                return ByteData.U2;
+            }
+            else
+            {
+                return 0;
+            }
         }
     }
     else
     {
-        Idx = (0 - Idx) << 1;
-        if (MemoDataN[N].size() > (Idx + 1))
+        Idx = Idx << 1;
+        if (MemoData[N].Sparse.count(Idx))
         {
-            ByteData.Raw[0] = MemoDataN[N][Idx + 0];
-            ByteData.Raw[1] = MemoDataN[N][Idx + 1];
+            ByteData.Raw[0] = MemoData[N].Sparse[Idx + 0];
+            ByteData.Raw[1] = MemoData[N].Sparse[Idx + 1];
             return ByteData.U2;
         }
         else
@@ -547,31 +586,50 @@ ubyte2 ScriptShared::MemoGet2(uchar N, arrayidx Idx)
 
 ubyte4 ScriptShared::MemoGet4(uchar N, arrayidx Idx)
 {
-    if (Idx >= 0)
+    if (MemoData[N].IsDense)
     {
-        Idx = Idx << 2;
-        if (MemoDataP[N].size() > (Idx + 3))
+        if (Idx >= 0)
         {
-            ByteData.Raw[0] = MemoDataP[N][Idx + 0];
-            ByteData.Raw[1] = MemoDataP[N][Idx + 1];
-            ByteData.Raw[2] = MemoDataP[N][Idx + 2];
-            ByteData.Raw[3] = MemoDataP[N][Idx + 3];
-            return ByteData.U4;
+            Idx = Idx << 2;
+            if (MemoData[N].DenseP.size() > (Idx + 3))
+            {
+                ByteData.Raw[0] = MemoData[N].DenseP[Idx + 0];
+                ByteData.Raw[1] = MemoData[N].DenseP[Idx + 1];
+                ByteData.Raw[2] = MemoData[N].DenseP[Idx + 2];
+                ByteData.Raw[3] = MemoData[N].DenseP[Idx + 3];
+                return ByteData.U4;
+            }
+            else
+            {
+                return 0;
+            }
         }
         else
         {
-            return 0;
+            Idx = (0 - Idx) << 2;
+            if (MemoData[N].DenseN.size() > (Idx + 3))
+            {
+                ByteData.Raw[0] = MemoData[N].DenseN[Idx + 0];
+                ByteData.Raw[1] = MemoData[N].DenseN[Idx + 1];
+                ByteData.Raw[2] = MemoData[N].DenseN[Idx + 2];
+                ByteData.Raw[3] = MemoData[N].DenseN[Idx + 3];
+                return ByteData.U4;
+            }
+            else
+            {
+                return 0;
+            }
         }
     }
     else
     {
-        Idx = (0 - Idx) << 2;
-        if (MemoDataN[N].size() > (Idx + 3))
+        Idx = Idx << 2;
+        if (MemoData[N].Sparse.count(Idx))
         {
-            ByteData.Raw[0] = MemoDataN[N][Idx + 0];
-            ByteData.Raw[1] = MemoDataN[N][Idx + 1];
-            ByteData.Raw[2] = MemoDataN[N][Idx + 2];
-            ByteData.Raw[3] = MemoDataN[N][Idx + 3];
+            ByteData.Raw[0] = MemoData[N].Sparse[Idx + 0];
+            ByteData.Raw[1] = MemoData[N].Sparse[Idx + 1];
+            ByteData.Raw[2] = MemoData[N].Sparse[Idx + 2];
+            ByteData.Raw[3] = MemoData[N].Sparse[Idx + 3];
             return ByteData.U4;
         }
         else
@@ -583,78 +641,176 @@ ubyte4 ScriptShared::MemoGet4(uchar N, arrayidx Idx)
 
 void ScriptShared::MemoSet1(uchar N, arrayidx Idx, ubyte1 Val)
 {
-    if (Idx >= 0)
+    if (MemoData[N].IsDense)
     {
-        if (MemoDataP[N].size() <= Idx)
+        if (Idx >= 0)
         {
-            MemoDataP[N].resize(Idx + 1);
+            if (MemoData[N].DenseP.size() <= Idx)
+            {
+                MemoData[N].DenseP.resize(Idx + 1);
+            }
+            MemoData[N].DenseP[Idx] = Val;
+            /*if ((Val == 0) && ((Idx + 1) == MemoData[N].DenseP.size()))
+            {
+                while ((Idx > 0) && (MemoData[N].DenseP[Idx] == 0))
+                {
+                    Idx -= 1;
+                }
+                MemoData[N].DenseP.resize(Idx + 1);
+            }*/
         }
-        MemoDataP[N][Idx] = Val;
+        else
+        {
+            Idx = 0 - Idx;
+            if (MemoData[N].DenseN.size() <= Idx)
+            {
+                MemoData[N].DenseN.resize(Idx + 1);
+            }
+            MemoData[N].DenseN[Idx] = Val;
+            /*if ((Val == 0) && ((Idx + 1) == MemoData[N].DenseN.size()))
+            {
+                while ((Idx > 0) && (MemoData[N].DenseN[Idx] == 0))
+                {
+                    Idx -= 1;
+                }
+                MemoData[N].DenseN.resize(Idx + 1);
+            }*/
+        }
     }
     else
     {
-        Idx = 0 - Idx;
-        if (MemoDataN[N].size() <= Idx)
+        if (Val == 0)
         {
-            MemoDataN[N].resize(Idx + 1);
+            if (MemoData[N].Sparse.count(Idx)) MemoData[N].Sparse.erase(Idx);
         }
-        MemoDataN[N][Idx] = Val;
+        else
+        {
+            MemoData[N].Sparse[Idx] = Val;
+        }
     }
 }
 
 void ScriptShared::MemoSet2(uchar N, arrayidx Idx, ubyte2 Val)
 {
-    if (Idx >= 0)
+    ByteData.U2 = Val;
+    if (MemoData[N].IsDense)
     {
-        Idx = Idx << 1;
-        if (MemoDataP[N].size() <= (Idx + 1))
+        if (Idx >= 0)
         {
-            MemoDataP[N].resize(Idx + 2);
+            Idx = Idx << 1;
+            if (MemoData[N].DenseP.size() <= (Idx + 1))
+            {
+                MemoData[N].DenseP.resize(Idx + 2);
+            }
+            MemoData[N].DenseP[Idx + 0] = ByteData.Raw[0];
+            MemoData[N].DenseP[Idx + 1] = ByteData.Raw[1];
+            /*if ((Val == 0) && ((Idx + 2) == MemoData[N].DenseP.size()))
+            {
+                while ((Idx > 0) && (MemoData[N].DenseP[Idx] == 0) && (MemoData[N].DenseP[Idx + 1] == 0))
+                {
+                    Idx -= 2;
+                }
+                MemoData[N].DenseP.resize(Idx + 2);
+            }*/
         }
-        ByteData.U2 = Val;
-        MemoDataP[N][Idx + 0] = ByteData.Raw[0];
-        MemoDataP[N][Idx + 1] = ByteData.Raw[1];
+        else
+        {
+            Idx = (0 - Idx) << 1;
+            if (MemoData[N].DenseN.size() <= (Idx + 1))
+            {
+                MemoData[N].DenseN.resize(Idx + 2);
+            }
+            MemoData[N].DenseN[Idx + 0] = ByteData.Raw[0];
+            MemoData[N].DenseN[Idx + 1] = ByteData.Raw[1];
+            /*if ((Val == 0) && ((Idx + 2) == MemoData[N].DenseN.size()))
+            {
+                while ((Idx > 0) && (MemoData[N].DenseN[Idx] == 0) && (MemoData[N].DenseN[Idx + 1] == 0))
+                {
+                    Idx -= 2;
+                }
+                MemoData[N].DenseN.resize(Idx + 2);
+            }*/
+        }
     }
     else
     {
-        Idx = (0 - Idx) << 1;
-        if (MemoDataN[N].size() <= (Idx + 1))
+        Idx = Idx << 1;
+        if (Val == 0)
         {
-            MemoDataN[N].resize(Idx + 2);
+            if (MemoData[N].Sparse.count(Idx + 0)) MemoData[N].Sparse.erase(Idx + 0);
+            if (MemoData[N].Sparse.count(Idx + 1)) MemoData[N].Sparse.erase(Idx + 1);
         }
-        ByteData.U2 = Val;
-        MemoDataN[N][Idx + 0] = ByteData.Raw[0];
-        MemoDataN[N][Idx + 1] = ByteData.Raw[1];
+        else
+        {
+            MemoData[N].Sparse[Idx + 0] = ByteData.Raw[0];
+            MemoData[N].Sparse[Idx + 1] = ByteData.Raw[1];
+        }
     }
 }
 
 void ScriptShared::MemoSet4(uchar N, arrayidx Idx, ubyte4 Val)
 {
-    if (Idx >= 0)
+    ByteData.U4 = Val;
+    if (MemoData[N].IsDense)
     {
-        Idx = Idx << 2;
-        if (MemoDataP[N].size() <= (Idx + 3))
+        if (Idx >= 0)
         {
-            MemoDataP[N].resize(Idx + 4);
+            Idx = Idx << 2;
+            if (MemoData[N].DenseP.size() <= (Idx + 3))
+            {
+                MemoData[N].DenseP.resize(Idx + 4);
+            }
+            MemoData[N].DenseP[Idx + 0] = ByteData.Raw[0];
+            MemoData[N].DenseP[Idx + 1] = ByteData.Raw[1];
+            MemoData[N].DenseP[Idx + 2] = ByteData.Raw[2];
+            MemoData[N].DenseP[Idx + 3] = ByteData.Raw[3];
+            /*if ((Val == 0) && ((Idx + 4) == MemoData[N].DenseP.size()))
+            {
+                while ((Idx > 0) && (MemoData[N].DenseP[Idx] == 0) && (MemoData[N].DenseP[Idx + 1] == 0) && (MemoData[N].DenseP[Idx + 2] == 0) && (MemoData[N].DenseP[Idx + 1] == 0))
+                {
+                    Idx -= 4;
+                }
+                MemoData[N].DenseP.resize(Idx + 4);
+            }*/
         }
-        ByteData.U4 = Val;
-        MemoDataP[N][Idx + 0] = ByteData.Raw[0];
-        MemoDataP[N][Idx + 1] = ByteData.Raw[1];
-        MemoDataP[N][Idx + 2] = ByteData.Raw[2];
-        MemoDataP[N][Idx + 3] = ByteData.Raw[3];
+        else
+        {
+            Idx = (0 - Idx) << 2;
+            if (MemoData[N].DenseN.size() <= (Idx + 3))
+            {
+                MemoData[N].DenseN.resize(Idx + 4);
+            }
+            MemoData[N].DenseN[Idx + 0] = ByteData.Raw[0];
+            MemoData[N].DenseN[Idx + 1] = ByteData.Raw[1];
+            MemoData[N].DenseN[Idx + 2] = ByteData.Raw[2];
+            MemoData[N].DenseN[Idx + 3] = ByteData.Raw[3];
+            /*if ((Val == 0) && ((Idx + 4) == MemoData[N].DenseN.size()))
+            {
+                while ((Idx > 0) && (MemoData[N].DenseN[Idx] == 0) && (MemoData[N].DenseN[Idx + 1] == 0) && (MemoData[N].DenseN[Idx + 2] == 0) && (MemoData[N].DenseN[Idx + 1] == 0))
+                {
+                    Idx -= 4;
+                }
+                MemoData[N].DenseN.resize(Idx + 4);
+            }*/
+        }
     }
     else
     {
-        Idx = (0 - Idx) << 2;
-        if (MemoDataN[N].size() <= (Idx + 3))
+        Idx = Idx << 2;
+        if (Val == 0)
         {
-            MemoDataN[N].resize(Idx + 4);
+            if (MemoData[N].Sparse.count(Idx + 0)) MemoData[N].Sparse.erase(Idx + 0);
+            if (MemoData[N].Sparse.count(Idx + 1)) MemoData[N].Sparse.erase(Idx + 1);
+            if (MemoData[N].Sparse.count(Idx + 2)) MemoData[N].Sparse.erase(Idx + 2);
+            if (MemoData[N].Sparse.count(Idx + 3)) MemoData[N].Sparse.erase(Idx + 3);
         }
-        ByteData.U4 = Val;
-        MemoDataN[N][Idx + 0] = ByteData.Raw[0];
-        MemoDataN[N][Idx + 1] = ByteData.Raw[1];
-        MemoDataN[N][Idx + 2] = ByteData.Raw[2];
-        MemoDataN[N][Idx + 3] = ByteData.Raw[3];
+        else
+        {
+            MemoData[N].Sparse[Idx + 0] = ByteData.Raw[0];
+            MemoData[N].Sparse[Idx + 1] = ByteData.Raw[1];
+            MemoData[N].Sparse[Idx + 2] = ByteData.Raw[2];
+            MemoData[N].Sparse[Idx + 3] = ByteData.Raw[3];
+        }
     }
 }
 

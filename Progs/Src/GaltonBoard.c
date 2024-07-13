@@ -51,7 +51,7 @@ void main(void)
 
  // The local memo 0 will be used as path board
  memo_local_shared(128);
- memo_clear(0);
+ memo_clear_dense(0);
 
  // Progress indicator
  int Progress = 1;

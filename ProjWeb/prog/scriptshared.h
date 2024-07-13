@@ -3,6 +3,7 @@
 
 #include "valuetypes.h"
 #include <vector>
+#include <map>
 #include <string>
 #include <sstream>
 #include <iomanip>
@@ -84,8 +85,16 @@ private:
     std::string TextBuffS;
     uint TextBuffI;
 
-    std::vector<uchar> MemoDataP[256];
-    std::vector<uchar> MemoDataN[256];
+    struct MemoDataDef
+    {
+        bool IsDense = true;
+        std::vector<uchar> DenseP;
+        std::vector<uchar> DenseN;
+        std::map<int, uchar> Sparse;
+    };
+
+    MemoDataDef MemoData[256];
+
     TypeConv ByteData;
     TypeConv TypeConv_;
 };

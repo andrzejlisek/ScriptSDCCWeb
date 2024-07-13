@@ -2,7 +2,8 @@
 
 #define memo_local_shared(N) do { _uchar[mem_swap + 1] = (N); _uchar[mem_swap + 2] = 0; _uchar[mem_swap] = IOMemoCmd + 0; } while(0)
 #define memo_shared_local(N) do { _uchar[mem_swap + 1] = (N); _uchar[mem_swap + 2] = 1; _uchar[mem_swap] = IOMemoCmd + 0; } while(0)
-#define memo_clear(N)        do { _uchar[mem_swap + 1] = (N); _uchar[mem_swap + 2] = 2; _uchar[mem_swap] = IOMemoCmd + 0; } while(0)
+#define memo_clear_dense(N)  do { _uchar[mem_swap + 1] = (N); _uchar[mem_swap + 2] = 2; _uchar[mem_swap] = IOMemoCmd + 0; } while(0)
+#define memo_clear_sparse(N) do { _uchar[mem_swap + 1] = (N); _uchar[mem_swap + 2] = 3; _uchar[mem_swap] = IOMemoCmd + 0; } while(0)
 
 schar  memo_get_schar( uchar N, slong Pos) { core_io1.val_slong = Pos; _uchar[mem_swap + 1] = N; _uchar[mem_swap + 2] = 1; _uchar[mem_swap] = IOMemoCmd + 1; return core_io0.val_schar;  }
 uchar  memo_get_uchar( uchar N, slong Pos) { core_io1.val_slong = Pos; _uchar[mem_swap + 1] = N; _uchar[mem_swap + 2] = 1; _uchar[mem_swap] = IOMemoCmd + 1; return core_io0.val_uchar;  }
