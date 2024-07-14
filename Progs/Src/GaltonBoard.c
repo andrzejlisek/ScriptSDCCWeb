@@ -7,20 +7,19 @@
 void Repaint(int BoardHalfSize, int Progress)
 {
  uchar Engine = engine_number();
- uchar EngineInfo = Engine + 1;
 
  int BoardSize = BoardHalfSize + BoardHalfSize;
  
  // Clear the graphics screen
  graph_clear(Engine);
- graph_clear(EngineInfo);
- graph_text_color_f(EngineInfo, 255, 255, 255);
- graph_text_move(EngineInfo, 0, 0, 0);
-
- string_set_sint(Progress);
- string_append("/16");
-
- graph_text_string(EngineInfo, 0);
+ if (Progress < 16)
+ {
+  graph_text_color_f(Engine, 255, 255, 255);
+  graph_text_move(Engine, 0, 0, 0);
+  string_set_sint(Progress);
+  string_append("/16");
+  graph_text_string(Engine, 0);
+ }
 
  // Paint the board
  long BoardIdx = 0;

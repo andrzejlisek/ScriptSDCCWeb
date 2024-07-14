@@ -394,9 +394,9 @@ The script demonstrates the text rendering abilities and using Unicode character
 
 The script uses the local memory provided by **memo\.h** library, because needs big dwo dimensional array consisting of about 256k items\.
 
-There is the simulation of big Galton board with 512 steps\. In every step, the initial value is incremented or decremented by 1, the operation is chooser by random\. The procedure is repeated 16384 and the board is painted in the first canvas every 2048 iterations\. In the second canvas, there is textually indicated the progress, which consists of 16 parts, like the board is repainted 16 times during the script\.
+There is the simulation of big Galton board with 512 steps\. In every step, the initial value is incremented or decremented by 1, the operation is chooser by random\. The procedure is repeated 16384 and the board is painted in the first canvas every 2048 iterations\. During the progress, there is also textually indicated the progress, which consists of 16 parts\. The final step indicator will not be painted\.
 
-For simulate, run the script and wait e longer while until script ends\. Of course, yu can sto the script earlier, but there will ledd cumulated pathes\. After ending or stopping the script, you can observe the final board containing all cumulated pathes, which is presented as point cloud\. By setting the parameters, you can see for example top view of whole board, the perspective view or one iteration, which shape as similar to normal distribution chart\.
+For simulate, run the script and wait e longer while until script ends\. Of course, you can stop the script earlier, but there will less cumulated pathes and you will have to turn off the text display in the graph canvas settings\. After ending or stopping the script, you will observe the final board containing all cumulated pathes, which is presented as point cloud\. By setting the parameters, you can see for example top view of whole board, the perspective view or one iteration, which shape as similar to normal distribution chart\.
 
 After finishing the drawing, you can see the filled board\.
 
@@ -563,7 +563,7 @@ The script is the simple example, how to get the parameters from user and genera
 
 # Spirograph\.c
 
-This script simulates the spirograph tool by drawing hypotrochoid, epitrochoid and other similar closed curves\. The script allow for compare performance between standard implementation of operations \(emultiplication, sine and cosine\) and implementation using engine by **mathx\.h** library\.
+This script simulates the spirograph tool by drawing hypotrochoid, epitrochoid, other similar closed curves and Lissajous curves\. The script allow for compare performance between standard implementation of operations \(emultiplication, sine and cosine\) and implementation using engine by **mathx\.h** library\.
 
 Script used one widget form and two canvases\. After script running, its almost immediatel moves into stop state\. In the form, there are following parameters of drawing curve:
 
@@ -577,6 +577,8 @@ Script used one widget form and two canvases\. After script running, its almost 
 * **Standard &#124; Engine** \- Two switches, which allows to use standard algorithm and engine operations\. this allow to measure and compare the both algorithm\.
 
 Below the fields, there are four buttons, every button creates different curve based on the same parameters\. Every button has two numbers, initially replaced by **?** character\. After drawing, the first number represents the number of instructions executed for drawing using standard algorithm, the second number represents the number of instructions executed for drawing using engine algorithms\. Displaying both numbers at once, you can compare the speed using both methods\.
+
+## Hypotrochoid and Epitrochoid
 
 There is example after drafing all forur curves by both algorighms:
 
@@ -610,6 +612,43 @@ The other inner curve derivated from epitrochoid:
 ![](Readme_pics/Spiro41.png "")
 
 ![](Readme_pics/Spiro42.png "")
+
+## Lissajous curves
+
+The other function is drawing Lissajous curve\. For this curve, there are used the following parameters with another meaning:
+
+
+* **Stator radius** \- Horizontal factor\.
+* **Rotor radius** \- Vertical factor\.
+* **Drawing factor x100** \- Phase difference in degrees, depending on value sign:
+  * Positive value \- Phase offset in horizontal part\.
+  * Negative value \- Phase offset in vertical part\.
+
+The phase angle will be normalized to be between \-180 and 180 degrees\. In the formula, the angle are written botn in radians and in degrees\.
+
+The example curve configuration form after drawing using both algorithms, the curve view and curve formula:
+
+![](Readme_pics/Spiro51.png "")
+
+![](Readme_pics/Spiro52.png "")
+
+![](Readme_pics/Spiro53.png "")
+
+The positive phase value modifies the horizontal part of the formula:
+
+![](Readme_pics/Spiro54.png "")
+
+![](Readme_pics/Spiro55.png "")
+
+![](Readme_pics/Spiro56.png "")
+
+The negative phase value modifies the horizontal part of the formula:
+
+![](Readme_pics/Spiro57.png "")
+
+![](Readme_pics/Spiro58.png "")
+
+![](Readme_pics/Spiro59.png "")
 
 # FormulaChart\.c
 
