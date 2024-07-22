@@ -39,6 +39,39 @@
     
     <script type='text/javascript'>
 
+
+        function StringReplace(S, str1, str2, ignore)
+        {
+            return S.replace(new RegExp(str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,"\\$&"),(ignore?"gi":"g")),(typeof(str2)=="string")?str2.replace(/\$/g,"$$$$"):str2);
+        }
+        
+        function TextToHtml(S)
+        {
+            S = StringReplace(S, "&", "&amp;", false);
+            S = StringReplace(S, "<", "&lt;", false);
+            S = StringReplace(S, ">", "&gt;", false);
+            S = StringReplace(S, "\"", "&quot;", false);
+            S = StringReplace(S, "\'", "&apos;", false);
+            S = StringReplace(S, " ", "&nbsp;", false);
+            S = StringReplace(S, "\n", "<br>", false);
+            return S;
+        }
+        
+        function HtmlToText(S)
+        {
+            S = StringReplace(S, "<br>", "\n", false);
+            S = StringReplace(S, "&apos;", "\'", false);
+            S = StringReplace(S, "&quot;", "\"", false);
+            S = StringReplace(S, "&gt;", ">", false);
+            S = StringReplace(S, "&lt;", "<", false);
+            S = StringReplace(S, "&nbsp;", " ", false);
+            S = StringReplace(S, "&amp;", "&", false);
+            return S;
+        }
+
+
+
+
         let WindowW = 1;
         let WindowH = 1;
         let WindowDivObj = document.getElementById("div0");
@@ -182,7 +215,7 @@
                         switch (WidgetList[ListPos][4])
                         {
                             case 1:
-                                return CtrlObj.innerHTML;
+                                return HtmlToText(CtrlObj.innerHTML);
                             case 2:
                                 return CtrlObj.value;
                             case 3:
@@ -243,7 +276,7 @@
                         switch (WidgetList[ListPos][4])
                         {
                             case 1:
-                                CtrlObj.innerHTML = ParamValue;
+                                CtrlObj.innerHTML = TextToHtml(ParamValue);
                                 break;
                             case 2:
                                 CtrlObj.value = ParamValue;
@@ -284,6 +317,8 @@
                         switch (WidgetList[ListPos][4])
                         {
                             case 1: // Label
+                                CtrlObj.innerHTML = TextToHtml(ParamValue) + CtrlObj.innerHTML;
+                                break;
                             case 2: // Button
                             case 4: // Text box
                             case 6: // Multiline text
@@ -304,6 +339,8 @@
                         switch (WidgetList[ListPos][4])
                         {
                             case 1: // Label
+                                CtrlObj.innerHTML = CtrlObj.innerHTML + TextToHtml(ParamValue);
+                                break;
                             case 2: // Button
                             case 4: // Text box
                             case 6: // Multiline text
