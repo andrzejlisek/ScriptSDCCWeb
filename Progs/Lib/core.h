@@ -111,7 +111,7 @@ void string_clear(void)
 // V - Pointer to null-terminated string
 void string_append(char * V)
 {
- uchar I = 0;
+ ushort I = 0;
  _uchar[mem_swap + 1] = 11;
  while (V[I] != 0)
  {
